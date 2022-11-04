@@ -1,9 +1,9 @@
-import { Container, Text } from "./styles";
+import { Container, Text } from './styles'
 
 export function Header() {
-    return (
-        <Container>
-            <Text>header</Text>
-        </Container>
-    )
+  return (
+    <Container>
+      <Text>header</Text>
+    </Container>
+  )
 }

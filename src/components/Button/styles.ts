@@ -21,9 +21,14 @@ export const ButtonContainer = styled.button<PropsButtonContainer>`
   margin-top: 10px;
   margin-bottom: 10px;
   font-weight: 800;
+
   ${(props) => {
     return css`
       background-color: ${variants[props.variant]};
     `
   }};
+
+  &:hover {
+    opacity: 0.5;
+  }
 `

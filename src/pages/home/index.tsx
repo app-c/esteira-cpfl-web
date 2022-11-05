@@ -1,13 +1,10 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Cards } from '../../components/Cards'
 import { Header } from '../../components/Header'
-import { theme } from '../../theme/theme'
 import { onSnapshot, collection } from 'firebase/firestore'
 import { fire } from '../../config/firebase'
-import { motion } from 'framer-motion'
 import { Carousel, Container, ContainerCards, Inner } from './styles'
 import { Botao } from '../../components/Button'
-import axios from 'axios'
 import { IProsEster } from '../../dtos'
 import { api } from '../../api'
 
@@ -26,28 +23,34 @@ export function Home() {
   }, [])
 
   const db = collection(fire, 'notas')
-  useEffect(() => {
-    onSnapshot(db, (h) => {
-      setNotas(h.docs.map((p) => p.data() as IProsEster))
-    })
-  }, [db])
+
+  // useEffect(() => {
+  //   onSnapshot(db, (h) => {
+  //     setNotas(h.docs.map((p) => p.data() as IProsEster))
+  //   })
+  // }, [])
 
   const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const data = new FormData()
-
-      data.append('csv', e.target.files[0])
-
-      console.log(e.target.files[0])
-
-      //   await api
-      //     .post('http://192.168.5.124:3333', data)
-      //     .then((h) => {
-      //       console.log(h.data)
-      //     })
-      //     .catch((h) => console.log(h))
+      setFile(e.target.files[0])
     }
   }, [])
+
+  const upload = useCallback(async () => {
+    const data = new FormData()
+
+    data.append('csv', file)
+
+    await api
+      .post('/', data)
+      .then((h) => {
+        setNotas(h.data)
+      })
+      .catch((h) => console.log(h))
+    console.log(data)
+  }, [file])
+
+  console.log(notas)
 
   return (
     <Container>
@@ -61,6 +64,8 @@ export function Home() {
       >
         <label>
           <input type="file" onChange={handleFile} />
+
+          <Botao title="add" pres={upload} />
         </label>
       </div>
 
@@ -79,6 +84,7 @@ export function Home() {
                   nota={nt.Nota}
                   valor={nt.MO}
                   data={nt.Dt_programação}
+                  pres={submit}
                 />
               ))}
             </div>

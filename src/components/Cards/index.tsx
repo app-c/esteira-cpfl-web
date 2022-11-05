@@ -4,11 +4,12 @@ interface Props {
   nota: number
   data: string
   valor: string
+  pres: () => void
 }
 
-export function Cards({ nota, data, valor }: Props) {
+export function Cards({ nota, pres, data, valor }: Props) {
   return (
-    <Container>
+    <Container onClick={pres}>
       <Header>
         <TextNota>{nota}</TextNota>
       </Header>

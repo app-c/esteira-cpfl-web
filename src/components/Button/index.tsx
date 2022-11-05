@@ -8,7 +8,7 @@ interface Props {
 
 export function Botao({ variant = 'primary', pres, title }: Props) {
   return (
-    <ButtonContainer variant={variant} type="file">
+    <ButtonContainer variant={variant} onClick={pres} type="submit">
       {title}
     </ButtonContainer>
   )

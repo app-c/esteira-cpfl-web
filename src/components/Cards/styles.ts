@@ -2,11 +2,17 @@ import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  width: 500px;
+  width: 300px;
   background: #4a4545;
   border-radius: 10px;
   padding: 5px;
   margin-left: 5px;
+
+  transition: 0.5s;
+
+  &:hover {
+    width: 320px;
+  }
 `
 
 export const Header = styled.div`

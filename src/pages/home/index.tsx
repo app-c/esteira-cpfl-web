@@ -1,7 +1,7 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Cards } from '../../components/Cards'
 import { Header } from '../../components/Header'
-import { onSnapshot, collection } from 'firebase/firestore'
+import { onSnapshot, collection, addDoc } from 'firebase/firestore'
 import { fire } from '../../config/firebase'
 import { Carousel, Container, ContainerCards, Inner } from './styles'
 import { Botao } from '../../components/Button'
@@ -11,24 +11,47 @@ import { api } from '../../api'
 export function Home() {
   const motionRef = useRef()
   const [notas, setNotas] = useState<IProsEster[]>([])
+  const [estera, setEstera] = useState<IProsEster[]>([])
   const [width, setWidth] = useState(0)
   const [file, setFile] = useState<any>(null)
+  const db = collection(fire, 'notas')
 
   const submit = useCallback(() => {
-    console.log('ok', 'bla')
-  }, [])
+    const dados = []
+    estera.forEach((est) => {
+      notas.forEach((nt) => {
+        if (est.Nota === nt.Nota) {
+          console.log(nt.id)
+        }
+      })
+    })
+
+    // notas.forEach((h) => {
+    //   const dados = {
+    //     ...h,
+    //     EQUIPE: [],
+    //     situation: 'estera',
+    //   }
+    //   addDoc(db, dados).then((p) => console.log('ok'))
+    // })
+  }, [estera, notas])
 
   useEffect(() => {
     setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
+  }, [estera])
+
+  useEffect(() => {
+    onSnapshot(db, (h) => {
+      setEstera(
+        h.docs.map((p) => {
+          return {
+            ...p.data(),
+            id: p.id,
+          } as IProsEster
+        }),
+      )
+    })
   }, [])
-
-  const db = collection(fire, 'notas')
-
-  // useEffect(() => {
-  //   onSnapshot(db, (h) => {
-  //     setNotas(h.docs.map((p) => p.data() as IProsEster))
-  //   })
-  // }, [])
 
   const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -47,7 +70,6 @@ export function Home() {
         setNotas(h.data)
       })
       .catch((h) => console.log(h))
-    console.log(data)
   }, [file])
 
   console.log(notas)
@@ -66,6 +88,7 @@ export function Home() {
           <input type="file" onChange={handleFile} />
 
           <Botao title="add" pres={upload} />
+          <Botao title="upload notas" pres={submit} />
         </label>
       </div>
 

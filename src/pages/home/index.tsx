@@ -1,7 +1,15 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Cards } from '../../components/Cards'
 import { Header } from '../../components/Header'
-import { onSnapshot, collection, addDoc } from 'firebase/firestore'
+import {
+  onSnapshot,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import { fire } from '../../config/firebase'
 import { Carousel, Container, ContainerCards, Inner } from './styles'
 import { Botao } from '../../components/Button'
@@ -16,29 +24,50 @@ export function Home() {
   const [file, setFile] = useState<any>(null)
   const db = collection(fire, 'notas')
 
-  const submit = useCallback(() => {
-    const dados = []
-    estera.forEach((est) => {
-      notas.forEach((nt) => {
+  const submit = useCallback(async () => {
+    const dados: IProsEster[] = []
+    notas.forEach((est) => {
+      let nota = {} as IProsEster
+      estera.forEach((nt) => {
         if (est.Nota === nt.Nota) {
-          console.log(nt.id)
+          nota = {
+            ...nt,
+            Dt_programação: est.Dt_programação,
+            EQUIPE: est.EQUIPE || [],
+          }
         }
       })
+
+      if (nota.Nota === est.Nota) {
+        dados.push(nota)
+      } else {
+        dados.push(est)
+      }
     })
 
-    // notas.forEach((h) => {
-    //   const dados = {
-    //     ...h,
-    //     EQUIPE: [],
-    //     situation: 'estera',
-    //   }
-    //   addDoc(db, dados).then((p) => console.log('ok'))
-    // })
+    dados.forEach(async (h) => {
+      const id = h.id || 'id'
+      const dados = {
+        ...h,
+        EQUIPE: h.EQUIPE || [],
+        situation: 'estera',
+      }
+      const docRef = doc(fire, 'notas', id)
+      const docSnap = await getDoc(docRef)
+
+      if (!docSnap.data()) {
+        addDoc(db, dados)
+        console.log('null')
+      } else {
+        updateDoc(docRef, dados)
+        console.log(id)
+      }
+    })
   }, [estera, notas])
 
   useEffect(() => {
     setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
-  }, [estera])
+  }, [notas])
 
   useEffect(() => {
     onSnapshot(db, (h) => {
@@ -72,21 +101,22 @@ export function Home() {
       .catch((h) => console.log(h))
   }, [file])
 
-  console.log(notas)
-
   return (
     <Container>
       <Header />
 
+      <input type="file" onChange={handleFile} />
       <div
         style={{
+          padding: 10,
+          display: 'flex',
           marginTop: 10,
           marginBottom: 10,
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
         <label>
-          <input type="file" onChange={handleFile} />
-
           <Botao title="add" pres={upload} />
           <Botao title="upload notas" pres={submit} />
         </label>
@@ -107,7 +137,7 @@ export function Home() {
                   nota={nt.Nota}
                   valor={nt.MO}
                   data={nt.Dt_programação}
-                  pres={submit}
+                  pres={() => {}}
                 />
               ))}
             </div>

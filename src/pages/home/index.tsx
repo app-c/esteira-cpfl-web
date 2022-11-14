@@ -15,9 +15,8 @@ import { Carousel, Container, ContainerCards, Inner } from './styles'
 import { Botao } from '../../components/Button'
 import { IProsEster } from '../../dtos'
 import { api } from '../../api'
-
 export function Home() {
-  const motionRef = useRef()
+  const motionRef = useRef<any>()
   const [notas, setNotas] = useState<IProsEster[]>([])
   const [estera, setEstera] = useState<IProsEster[]>([])
   const [width, setWidth] = useState(0)
@@ -25,6 +24,15 @@ export function Home() {
   const db = collection(fire, 'notas')
 
   const submit = useCallback(async () => {
+    // estera.forEach((h) => {
+    //   const dt = {
+    //     ...h,
+    //     EQUIPE: [],
+    //     situation: 'estera',
+    //   }
+    //   addDoc(db, dt).then((h) => console.log('ok'))
+    // })
+
     const dados: IProsEster[] = []
     notas.forEach((est) => {
       let nota = {} as IProsEster
@@ -66,6 +74,7 @@ export function Home() {
   }, [estera, notas])
 
   useEffect(() => {
+    console.log(motionRef.current.offsetWidth)
     setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
   }, [notas])
 
@@ -94,7 +103,7 @@ export function Home() {
     data.append('csv', file)
 
     await api
-      .post('/', data)
+      .post('/csv', data)
       .then((h) => {
         setNotas(h.data)
       })

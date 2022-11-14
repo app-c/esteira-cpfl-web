@@ -1,9 +1,9 @@
 import { Container, Header, Text, TextNota } from './styles'
 
 interface Props {
-  nota: number
+  nota: string
   data: string
-  valor: string
+  valor: number
   pres: () => void
 }
 

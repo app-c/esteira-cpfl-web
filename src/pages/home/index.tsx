@@ -11,30 +11,43 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { fire } from '../../config/firebase'
-import { Carousel, Container, ContainerCards, Inner } from './styles'
+import {
+  Carousel,
+  Container,
+  ContainerCards,
+  Inner,
+  File,
+  ContainerFile,
+  ContainerButton,
+} from './styles'
 import { Botao } from '../../components/Button'
 import { IProsEster } from '../../dtos'
 import { api } from '../../api'
+import Modal from 'react-modal'
+
 export function Home() {
   const motionRef = useRef<any>()
   const [notas, setNotas] = useState<IProsEster[]>([])
+  const [preview, setPreview] = useState<IProsEster[]>([])
   const [estera, setEstera] = useState<IProsEster[]>([])
+  const [ntParcial, setNtParcial] = useState<IProsEster[]>([])
+  const [ntCancelada, setNtCancelada] = useState<IProsEster[]>([])
   const [width, setWidth] = useState(0)
   const [file, setFile] = useState<any>(null)
+  const [select, setSelect] = useState('esteira')
+
+  const [modal, setModal] = useState(false)
+
   const db = collection(fire, 'notas')
+  const dp = collection(fire, 'nt-parcial')
+  const dc = collection(fire, 'nt-cancelada')
 
   const submit = useCallback(async () => {
-    // estera.forEach((h) => {
-    //   const dt = {
-    //     ...h,
-    //     EQUIPE: [],
-    //     situation: 'estera',
-    //   }
-    //   addDoc(db, dt).then((h) => console.log('ok'))
-    // })
+    setPreview([])
+    setFile(null)
 
     const dados: IProsEster[] = []
-    notas.forEach((est) => {
+    preview.forEach((est) => {
       let nota = {} as IProsEster
       estera.forEach((nt) => {
         if (est.Nota === nt.Nota) {
@@ -53,68 +66,141 @@ export function Home() {
       }
     })
 
-    dados.forEach(async (h) => {
-      const id = h.id || 'id'
-      const dados = {
-        ...h,
-        EQUIPE: h.EQUIPE || [],
-        situation: 'estera',
-      }
-      const docRef = doc(fire, 'notas', id)
-      const docSnap = await getDoc(docRef)
+    // dados.forEach(async (h) => {
+    //   const id = h.id || 'id'
+    //   const dados = {
+    //     ...h,
+    //     EQUIPE: h.EQUIPE || [],
+    //     situation: 'estera',
+    //   }
+    //   const docRef = doc(fire, 'notas', id)
+    //   const docSnap = await getDoc(docRef)
 
-      if (!docSnap.data()) {
-        addDoc(db, dados)
-        console.log('null')
-      } else {
-        updateDoc(docRef, dados)
-        console.log(id)
-      }
-    })
-  }, [estera, notas])
+    //   if (!docSnap.data()) {
+    //     addDoc(db, dados)
+    //     console.log('null')
+    //   } else {
+    //     updateDoc(docRef, dados)
+    //     console.log(id)
+    //   }
+    // })
+  }, [estera, preview])
 
   useEffect(() => {
-    console.log(motionRef.current.offsetWidth)
     setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
-  }, [notas])
+  }, [preview, estera, ntCancelada, ntParcial, select])
 
   useEffect(() => {
     onSnapshot(db, (h) => {
-      setEstera(
-        h.docs.map((p) => {
-          return {
-            ...p.data(),
-            id: p.id,
-          } as IProsEster
-        }),
-      )
+      const rs = h.docs.map((p) => {
+        return {
+          ...p.data(),
+          id: p.id,
+        } as IProsEster
+      })
+      const res = rs.sort((a, b) => {
+        if (b.Dt_programação > a.Dt_programação) {
+          return -1
+        }
+      })
+
+      setEstera(res)
+    })
+
+    onSnapshot(dp, (h) => {
+      const rs = h.docs.map((p) => {
+        return {
+          ...p.data(),
+          id: p.id,
+        } as IProsEster
+      })
+      const res = rs.sort((a, b) => {
+        if (b.Dt_programação > a.Dt_programação) {
+          return -1
+        }
+      })
+
+      setNtParcial(res)
+    })
+
+    onSnapshot(dc, (h) => {
+      const rs = h.docs.map((p) => {
+        return {
+          ...p.data(),
+          id: p.id,
+        } as IProsEster
+      })
+      const res = rs.sort((a, b) => {
+        if (b.Dt_programação > a.Dt_programação) {
+          return -1
+        }
+      })
+
+      setNtCancelada(res)
     })
   }, [])
 
-  const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0])
-    }
-  }, [])
+  const upload = useCallback(async () => {}, [file])
 
-  const upload = useCallback(async () => {
-    const data = new FormData()
+  const handleFile = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      setPreview([])
+      if (e.target.files) {
+        const fl = e.target.files[0]
+        const data = new FormData()
 
-    data.append('csv', file)
+        data.append('csv', fl)
 
-    await api
-      .post('/csv', data)
-      .then((h) => {
-        setNotas(h.data)
-      })
-      .catch((h) => console.log(h))
-  }, [file])
+        await api
+          .post('/', data)
+          .then((h) => {
+            setPreview(h.data)
+          })
+          .catch((h) => console.log(h))
+        // setFile(e.target.files[0])
+        upload()
+      }
+    },
+    [upload],
+  )
+
+  console.log(select)
 
   return (
     <Container>
       <Header />
 
-      <input type="file" onChange={handleFile} />
+      <Modal isOpem={true}>
+        <div>
+          <p>hello</p>
+        </div>
+      </Modal>
+
+      <File>
+        <ContainerFile>
+          <input type="file" onChange={handleFile} />
+          <Botao title="upload notas" pres={submit} />
+        </ContainerFile>
+
+        <ContainerButton>
+          <Botao
+            variant="secundary"
+            title="Minha esteira"
+            pres={() => setSelect('esteira')}
+          />
+          <Botao
+            variant="secundary"
+            title="Notas parciais"
+            pres={() => setSelect('parcial')}
+          />
+          <Botao
+            variant="secundary"
+            title="notas canceladas"
+            pres={() => setSelect('cancelada')}
+          />
+        </ContainerButton>
+      </File>
+
       <div
         style={{
           padding: 10,
@@ -125,14 +211,12 @@ export function Home() {
           justifyContent: 'space-between',
         }}
       >
-        <label>
-          <Botao title="add" pres={upload} />
-          <Botao title="upload notas" pres={submit} />
-        </label>
+        <label></label>
       </div>
 
-      <p>ESTEIRA DE PROCESSOS</p>
-      <ContainerCards>
+      {/* PREVIEW */}
+      <ContainerCards style={{ marginBottom: 20 }}>
+        {preview.length > 0 && <p>Pré visualização</p>}
         <Carousel whileTap={{ cursor: 'grabbing' }}>
           <Inner
             ref={motionRef}
@@ -140,7 +224,7 @@ export function Home() {
             dragConstraints={{ right: 0, left: -width }}
           >
             <div style={{ display: 'flex' }}>
-              {notas.map((nt) => (
+              {preview.map((nt) => (
                 <Cards
                   key={nt.id}
                   nota={nt.Nota}
@@ -153,6 +237,84 @@ export function Home() {
           </Inner>
         </Carousel>
       </ContainerCards>
+
+      {/* ESTEIRA */}
+      {select === 'esteira' && (
+        <ContainerCards>
+          <p>Minha esteira</p>
+          <Carousel whileTap={{ cursor: 'grabbing' }}>
+            <Inner
+              ref={motionRef}
+              drag="x"
+              dragConstraints={{ right: 0, left: -width }}
+            >
+              <div style={{ display: 'flex' }}>
+                {estera.map((nt) => (
+                  <Cards
+                    key={nt.id}
+                    nota={nt.Nota}
+                    valor={nt.MO}
+                    data={nt.Dt_programação}
+                    pres={() => {}}
+                  />
+                ))}
+              </div>
+            </Inner>
+          </Carousel>
+        </ContainerCards>
+      )}
+
+      {/* PARCIAL */}
+      {select === 'parcial' && (
+        <ContainerCards>
+          <p>Notas parciais</p>
+          <Carousel whileTap={{ cursor: 'grabbing' }}>
+            <Inner
+              ref={motionRef}
+              drag="x"
+              dragConstraints={{ right: 0, left: -width }}
+            >
+              <div style={{ display: 'flex' }}>
+                {ntParcial.map((nt) => (
+                  <Cards
+                    key={nt.id}
+                    nota={nt.Nota}
+                    valor={nt.MO}
+                    data={nt.Dt_programação}
+                    pres={() => {}}
+                  />
+                ))}
+              </div>
+            </Inner>
+          </Carousel>
+        </ContainerCards>
+      )}
+
+      {/* CANCELADA  */}
+      {select === 'cancelada' && (
+        <ContainerCards>
+          <p>Notas canceladas</p>
+          <Carousel whileTap={{ cursor: 'grabbing' }}>
+            <Inner
+              ref={motionRef}
+              drag="x"
+              dragConstraints={{ right: 0, left: -width }}
+            >
+              <div style={{ display: 'flex' }}>
+                {ntCancelada.map((nt) => (
+                  <Cards
+                    key={nt.id}
+                    nota={nt.Nota}
+                    valor={nt.MO}
+                    data={nt.Dt_programação}
+                    pres={() => {}}
+                  />
+                ))}
+              </div>
+            </Inner>
+          </Carousel>
+        </ContainerCards>
+      )}
     </Container>
   )
 }

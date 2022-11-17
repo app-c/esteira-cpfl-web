@@ -1,9 +1,13 @@
-import { Container, Text } from './styles'
+import { Container, ContainerDate, Date, Search, Text } from './styles'
 
 export function Header() {
   return (
     <Container>
-      <Text>header</Text>
+      <ContainerDate>
+        <Date type="date" />
+        <Date type="date" />
+      </ContainerDate>
+      <Search placeholder="pesquisar nota" />
     </Container>
   )
 }

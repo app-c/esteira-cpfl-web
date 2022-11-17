@@ -3,10 +3,11 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   width: 300px;
-  background: #4a4545;
+  background: #ffffff;
   border-radius: 10px;
   padding: 5px;
   margin-left: 5px;
+  border: solid 1px #252020;
 
   transition: 0.5s;
 
@@ -20,7 +21,6 @@ export const Header = styled.div`
   background-color: #6ca8b6;
   display: flex;
   width: 100%;
-  color: red;
   border-width: 5px;
 
   align-items: center;
@@ -28,9 +28,9 @@ export const Header = styled.div`
 `
 
 export const TextNota = styled.h3`
-  color: #1e1717;
+  color: #242121;
 `
 
 export const Text = styled.p`
-  color: #fff;
+  color: #0a0909;
 `

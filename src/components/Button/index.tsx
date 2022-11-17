@@ -1,4 +1,4 @@
-import { ButtonContainer, ButtonProps } from './styles'
+import { ButtonContainer, ButtonProps, Title } from './styles'
 
 interface Props {
   variant?: ButtonProps
@@ -9,7 +9,7 @@ interface Props {
 export function Botao({ variant = 'primary', pres, title }: Props) {
   return (
     <ButtonContainer variant={variant} onClick={pres} type="submit">
-      {title}
+      <Title>{title}</Title>
     </ButtonContainer>
   )
 }

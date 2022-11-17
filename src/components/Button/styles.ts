@@ -15,12 +15,14 @@ const variants = {
 }
 
 export const ButtonContainer = styled.button<PropsButtonContainer>`
-  width: 100px;
-  height: 40px;
-  border-radius: 8px;
+  border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 10px;
   font-weight: 800;
+  padding: 0 10px;
+  border: none;
+
+  cursor: pointer;
 
   ${(props) => {
     return css`
@@ -31,4 +33,9 @@ export const ButtonContainer = styled.button<PropsButtonContainer>`
   &:hover {
     opacity: 0.5;
   }
+`
+
+export const Title = styled.p`
+  color: ${theme.color.white[50]};
+  font-size: 14px;
 `

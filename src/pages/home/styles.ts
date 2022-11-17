@@ -8,9 +8,10 @@ export const Container = styled.div`
   flex-direction: column;
 `
 export const ContainerCards = styled(motion.div)`
+  padding: 5px 20px;
   display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 1200px;
 `
 
 export const Carousel = styled(motion.div)`
@@ -22,12 +23,19 @@ export const Inner = styled(motion.div)`
   display: flex;
 `
 
-export const File = styled.input`
-  background-color: ${theme.color.blue[10]};
-  cursor: pointer;
-  transition: background-color: ${theme.color.blue[50]};
+export const ContainerFile = styled.div`
+  width: 400px;
+`
 
-  /* &:hover {
-    background-color
-  } */
+export const File = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  padding: 5px 20px;
+`
+
+export const ContainerButton = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 600px;
 `

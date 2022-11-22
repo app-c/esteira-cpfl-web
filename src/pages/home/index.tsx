@@ -24,6 +24,7 @@ import { Botao } from '../../components/Button'
 import { IProsEster } from '../../dtos'
 import { api } from '../../api'
 import Modal from 'react-modal'
+import { Map } from '../../components/Map'
 
 export function Home() {
   const motionRef = useRef<any>()
@@ -66,24 +67,24 @@ export function Home() {
       }
     })
 
-    // dados.forEach(async (h) => {
-    //   const id = h.id || 'id'
-    //   const dados = {
-    //     ...h,
-    //     EQUIPE: h.EQUIPE || [],
-    //     situation: 'estera',
-    //   }
-    //   const docRef = doc(fire, 'notas', id)
-    //   const docSnap = await getDoc(docRef)
+    dados.forEach(async (h) => {
+      const id = h.id || 'id'
+      const dados = {
+        ...h,
+        EQUIPE: h.EQUIPE || [],
+        situation: 'estera',
+      }
+      const docRef = doc(fire, 'notas', id)
+      const docSnap = await getDoc(docRef)
 
-    //   if (!docSnap.data()) {
-    //     addDoc(db, dados)
-    //     console.log('null')
-    //   } else {
-    //     updateDoc(docRef, dados)
-    //     console.log(id)
-    //   }
-    // })
+      if (!docSnap.data()) {
+        addDoc(db, dados)
+        console.log('null')
+      } else {
+        updateDoc(docRef, dados)
+        console.log(id)
+      }
+    })
   }, [estera, preview])
 
   useEffect(() => {
@@ -92,19 +93,19 @@ export function Home() {
 
   useEffect(() => {
     onSnapshot(db, (h) => {
-      const rs = h.docs.map((p) => {
-        return {
-          ...p.data(),
-          id: p.id,
-        } as IProsEster
-      })
-      const res = rs.sort((a, b) => {
-        if (b.Dt_programação > a.Dt_programação) {
-          return -1
-        }
-      })
-
-      setEstera(res)
+      const rs = h.docs
+        .map((p) => {
+          return {
+            ...p.data(),
+            id: p.id,
+          } as IProsEster
+        })
+        .sort((a, b) => {
+          if (a < b) {
+            return -1
+          }
+          return 0
+        })
     })
 
     onSnapshot(dp, (h) => {
@@ -118,6 +119,7 @@ export function Home() {
         if (b.Dt_programação > a.Dt_programação) {
           return -1
         }
+        return 0
       })
 
       setNtParcial(res)
@@ -134,6 +136,7 @@ export function Home() {
         if (b.Dt_programação > a.Dt_programação) {
           return -1
         }
+        return 0
       })
 
       setNtCancelada(res)
@@ -170,7 +173,7 @@ export function Home() {
     <Container>
       <Header />
 
-      <Modal isOpem={true}>
+      <Modal isOpen={false}>
         <div>
           <p>hello</p>
         </div>
@@ -314,6 +317,69 @@ export function Home() {
             </Inner>
           </Carousel>
         </ContainerCards>
+      )}
+
+      <div
+        style={{
+          alignSelf: 'center',
+          marginTop: 30,
+        }}
+      >
+        <h3>Mapa geral das notas</h3>
+      </div>
+
+      {select === 'esteira' && (
+        <div>
+          {estera.map((h) => (
+            <Map
+              key={h.id}
+              nota={h.Nota}
+              data={h.Dt_programação}
+              mo={h.MO}
+              equipes={h.EQUIPE || []}
+              cidade={h.cidade}
+              encarregado={h.SUPERVISOR || ''}
+              obs={h.OBSERVACAO || ''}
+              tes={h.TLE}
+            />
+          ))}
+        </div>
+      )}
+
+      {select === 'parcial' && (
+        <div>
+          {ntParcial.map((h) => (
+            <Map
+              key={h.id}
+              nota={h.Nota}
+              data={h.Dt_programação}
+              mo={h.MO}
+              cidade={h.cidade}
+              encarregado={h.SUPERVISOR || ''}
+              equipes={h.EQUIPE || []}
+              obs={h.OBSERVACAO || ''}
+              tes={h.TLE}
+            />
+          ))}
+        </div>
+      )}
+
+      {select === 'cancelada' && (
+        <div>
+          {ntCancelada.map((h) => (
+            <Map
+              key={h.id}
+              nota={h.Nota}
+              data={h.Dt_programação}
+              mo={h.MO}
+              cidade={h.cidade}
+              equipes={h.EQUIPE || []}
+              encarregado={h.SUPERVISOR || ''}
+              obs={h.OBSERVACAO || ''}
+              tes={h.TLE}
+            />
+          ))}
+        </div>
       )}
     </Container>
   )

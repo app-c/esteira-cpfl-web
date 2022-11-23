@@ -1,4 +1,11 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Cards } from '../../components/Cards'
 import { Header } from '../../components/Header'
 import {
@@ -25,6 +32,13 @@ import { IProsEster } from '../../dtos'
 import { api } from '../../api'
 import Modal from 'react-modal'
 import { Map } from '../../components/Map'
+import eachDayOfInterval from 'date-fns/fp/eachDayOfInterval'
+import { addDays, format } from 'date-fns'
+
+interface ProsModal {
+  info: IProsEster
+  modal: boolean
+}
 
 export function Home() {
   const motionRef = useRef<any>()
@@ -36,6 +50,14 @@ export function Home() {
   const [width, setWidth] = useState(0)
   const [file, setFile] = useState<any>(null)
   const [select, setSelect] = useState('esteira')
+
+  const [opemModalEsteira, setOpemModalEsteira] = useState<ProsModal>({
+    info: {} as IProsEster,
+    modal: false,
+  })
+
+  const [dateA, setDateA] = useState('')
+  const [dateB, setDateB] = useState('')
 
   const [modal, setModal] = useState(false)
 
@@ -50,46 +72,19 @@ export function Home() {
     const dados: IProsEster[] = []
     preview.forEach((est) => {
       let nota = {} as IProsEster
-      estera.forEach((nt) => {
-        if (est.Nota === nt.Nota) {
-          nota = {
-            ...nt,
-            Dt_programação: est.Dt_programação,
-            EQUIPE: est.EQUIPE || [],
-          }
-        }
-      })
 
-      if (nota.Nota === est.Nota) {
-        dados.push(nota)
-      } else {
-        dados.push(est)
+      nota = {
+        ...est,
+        Dt_programação: est.Dt_programação,
+        EQUIPE: est.EQUIPE || [],
       }
+      dados.push(nota)
     })
 
     dados.forEach(async (h) => {
-      const id = h.id || 'id'
-      const dados = {
-        ...h,
-        EQUIPE: h.EQUIPE || [],
-        situation: 'estera',
-      }
-      const docRef = doc(fire, 'notas', id)
-      const docSnap = await getDoc(docRef)
-
-      if (!docSnap.data()) {
-        addDoc(db, dados)
-        console.log('null')
-      } else {
-        updateDoc(docRef, dados)
-        console.log(id)
-      }
+      addDoc(db, dados)
     })
   }, [estera, preview])
-
-  useEffect(() => {
-    setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
-  }, [preview, estera, ntCancelada, ntParcial, select])
 
   useEffect(() => {
     onSnapshot(db, (h) => {
@@ -101,11 +96,13 @@ export function Home() {
           } as IProsEster
         })
         .sort((a, b) => {
-          if (a < b) {
+          if (b.Dt_programação > a.Dt_programação) {
             return -1
           }
           return 0
         })
+
+      setEstera(rs)
     })
 
     onSnapshot(dp, (h) => {
@@ -143,6 +140,49 @@ export function Home() {
     })
   }, [])
 
+  const ListNotas = useMemo(() => {
+    const esteira: IProsEster[] = []
+    const parcial: IProsEster[] = []
+    const cancelada: IProsEster[] = []
+
+    const date = addDays(new Date(dateA), 1)
+    const datB = addDays(new Date(dateB), 1)
+    console.log(dateA)
+
+    if (date.getTime() <= datB.getTime()) {
+      const ruslt = eachDayOfInterval({
+        start: date,
+        end: datB,
+      })
+
+      ruslt.forEach((dt) => {
+        const fomatDt = format(dt, 'dd/MM/yyyy')
+        estera.forEach((item) => {
+          if (fomatDt === item.Dt_programação) {
+            esteira.push(item)
+          }
+        })
+
+        ntParcial.forEach((item) => {
+          if (fomatDt === item.Dt_programação) {
+            parcial.push(item)
+          }
+        })
+
+        ntCancelada.forEach((item) => {
+          if (fomatDt === item.Dt_programação) {
+            cancelada.push(item)
+          }
+        })
+      })
+    }
+    return {
+      est: esteira,
+      parc: parcial,
+      canc: cancelada,
+    }
+  }, [dateA, dateB, estera, ntCancelada, ntParcial])
+
   const upload = useCallback(async () => {}, [file])
 
   const handleFile = useCallback(
@@ -167,13 +207,18 @@ export function Home() {
     [upload],
   )
 
-  console.log(select)
+  useEffect(() => {
+    setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
+  }, [preview, ListNotas, ntParcial, estera, ntCancelada])
 
   return (
     <Container>
-      <Header />
+      <Header
+        dateA={(h: string) => setDateA(h)}
+        dateB={(h: string) => setDateB(h)}
+      />
 
-      <Modal isOpen={false}>
+      <Modal ariaHideApp={false} isOpen={opemModalEsteira.modal}>
         <div>
           <p>hello</p>
         </div>
@@ -252,13 +297,15 @@ export function Home() {
               dragConstraints={{ right: 0, left: -width }}
             >
               <div style={{ display: 'flex' }}>
-                {estera.map((nt) => (
+                {ListNotas.est.map((nt) => (
                   <Cards
                     key={nt.id}
                     nota={nt.Nota}
                     valor={nt.MO}
                     data={nt.Dt_programação}
-                    pres={() => {}}
+                    pres={() => {
+                      setOpemModalEsteira({ info: nt, modal: true })
+                    }}
                   />
                 ))}
               </div>
@@ -278,7 +325,7 @@ export function Home() {
               dragConstraints={{ right: 0, left: -width }}
             >
               <div style={{ display: 'flex' }}>
-                {ntParcial.map((nt) => (
+                {ListNotas.parc.map((nt) => (
                   <Cards
                     key={nt.id}
                     nota={nt.Nota}
@@ -304,7 +351,7 @@ export function Home() {
               dragConstraints={{ right: 0, left: -width }}
             >
               <div style={{ display: 'flex' }}>
-                {ntCancelada.map((nt) => (
+                {ListNotas.canc.map((nt) => (
                   <Cards
                     key={nt.id}
                     nota={nt.Nota}
@@ -330,7 +377,7 @@ export function Home() {
 
       {select === 'esteira' && (
         <div>
-          {estera.map((h) => (
+          {ListNotas.est.map((h) => (
             <Map
               key={h.id}
               nota={h.Nota}
@@ -348,7 +395,7 @@ export function Home() {
 
       {select === 'parcial' && (
         <div>
-          {ntParcial.map((h) => (
+          {ListNotas.parc.map((h) => (
             <Map
               key={h.id}
               nota={h.Nota}
@@ -366,7 +413,7 @@ export function Home() {
 
       {select === 'cancelada' && (
         <div>
-          {ntCancelada.map((h) => (
+          {ListNotas.canc.map((h) => (
             <Map
               key={h.id}
               nota={h.Nota}

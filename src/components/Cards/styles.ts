@@ -34,3 +34,17 @@ export const TextNota = styled.h3`
 export const Text = styled.p`
   color: #0a0909;
 `
+
+export const ContainerButton = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  button {
+    padding: 2px;
+    border: none;
+    margin-top: 20px;
+    border-radius: 4px;
+  }
+`

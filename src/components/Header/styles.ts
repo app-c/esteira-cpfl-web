@@ -20,7 +20,7 @@ export const ContainerDate = styled.div`
   justify-content: space-between;
 `
 
-export const Date = styled.input``
+export const DateInput = styled.input``
 
 export const Search = styled.input``
 

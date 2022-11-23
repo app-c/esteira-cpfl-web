@@ -21,6 +21,7 @@ export const ButtonContainer = styled.button<PropsButtonContainer>`
   font-weight: 800;
   padding: 0 10px;
   border: none;
+  min-width: 4rem;
 
   cursor: pointer;
 

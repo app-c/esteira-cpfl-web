@@ -22,8 +22,13 @@ export function Map({
   equipes,
   obs,
 }: Props) {
-  //   const equi = equipes.length > 0 ? equipes : []
-  console.log(equipes)
+  const numero = String(mo)
+  const val = numero.replace(/([0-9]{0})$/g, '.$100')
+  const valor = Number(val).toLocaleString('pt-br', {
+    style: 'currency',
+    currency: 'BRL',
+  })
+
   return (
     <>
       <Container>
@@ -36,8 +41,8 @@ export function Map({
             <Title>{data}</Title>
           </Box>
 
-          <Box>
-            <Title>{mo}</Title>
+          <Box style={{ marginLeft: -2 }}>
+            <Title>{valor}</Title>
           </Box>
 
           <Box>

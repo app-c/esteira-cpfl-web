@@ -12,7 +12,7 @@ export const Container = styled.div`
   transition: 0.5s;
 
   &:hover {
-    width: 320px;
+    width: 310px;
   }
 `
 

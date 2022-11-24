@@ -34,6 +34,7 @@ import Modal from 'react-modal'
 import { Map } from '../../components/Map'
 import eachDayOfInterval from 'date-fns/fp/eachDayOfInterval'
 import { addDays, format } from 'date-fns'
+import { EditNota } from '../../components/EditNota'
 
 interface ProsModal {
   info: IProsEster
@@ -42,12 +43,15 @@ interface ProsModal {
 
 export function Home() {
   const motionRef = useRef<any>()
+  const motionRefPreview = useRef<any>()
+  const [width, setWidth] = useState(0)
+  const [widthPreview, setWidthPreview] = useState(0)
+
   const [notas, setNotas] = useState<IProsEster[]>([])
   const [preview, setPreview] = useState<IProsEster[]>([])
   const [estera, setEstera] = useState<IProsEster[]>([])
   const [ntParcial, setNtParcial] = useState<IProsEster[]>([])
   const [ntCancelada, setNtCancelada] = useState<IProsEster[]>([])
-  const [width, setWidth] = useState(0)
   const [file, setFile] = useState<any>(null)
   const [select, setSelect] = useState('esteira')
 
@@ -75,14 +79,13 @@ export function Home() {
 
       nota = {
         ...est,
-        Dt_programação: est.Dt_programação,
-        EQUIPE: est.EQUIPE || [],
+        EQUIPE: [],
+        situation: 'estera',
       }
+      addDoc(db, nota)
+        .then(() => console.log('ok'))
+        .catch(() => console.log('erro'))
       dados.push(nota)
-    })
-
-    dados.forEach(async (h) => {
-      addDoc(db, dados)
     })
   }, [estera, preview])
 
@@ -209,6 +212,10 @@ export function Home() {
 
   useEffect(() => {
     setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
+    setWidthPreview(
+      motionRefPreview.current!.scrollWidth -
+        motionRefPreview.current!.offsetWidth,
+    )
   }, [preview, ListNotas, ntParcial, estera, ntCancelada])
 
   return (
@@ -219,9 +226,7 @@ export function Home() {
       />
 
       <Modal ariaHideApp={false} isOpen={opemModalEsteira.modal}>
-        <div>
-          <p>hello</p>
-        </div>
+        <EditNota />
       </Modal>
 
       <File>
@@ -267,9 +272,9 @@ export function Home() {
         {preview.length > 0 && <p>Pré visualização</p>}
         <Carousel whileTap={{ cursor: 'grabbing' }}>
           <Inner
-            ref={motionRef}
+            ref={motionRefPreview}
             drag="x"
-            dragConstraints={{ right: 0, left: -width }}
+            dragConstraints={{ right: 0, left: -widthPreview }}
           >
             <div style={{ display: 'flex' }}>
               {preview.map((nt) => (

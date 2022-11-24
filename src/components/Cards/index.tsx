@@ -6,9 +6,11 @@ interface Props {
   data: string
   valor: number
   pres: () => void
+  deletar: () => void
+  submit: () => void
 }
 
-export function Cards({ nota, pres, data, valor }: Props) {
+export function Cards({ nota, pres, data, valor, deletar, submit }: Props) {
   const numero = String(valor)
   const val = numero.replace(/([0-9]{0})$/g, '.$100')
   const mo = Number(val).toLocaleString('pt-br', {
@@ -26,8 +28,8 @@ export function Cards({ nota, pres, data, valor }: Props) {
       <Text>equipes: </Text>
       <ContainerButton>
         <Botao title="Enviar" variant="success" />
-        <Botao title="Editar" variant="secundary" />
-        <Botao pres={pres} title="Info" variant="primary" />
+        <Botao pres={pres} title="Editar" variant="secundary" />
+        <Botao pres={deletar} title="Deletar" variant="danger" />
       </ContainerButton>
     </Container>
   )

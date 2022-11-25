@@ -3,7 +3,13 @@
 import React, { createContext } from 'react'
 import { onSnapshot, collection } from 'firebase/firestore'
 import { eachDayOfInterval, format } from 'date-fns'
-import { IC4, IFaturamento, IProsEster, IProsFuncionarios } from '../dtos'
+import {
+  IC4,
+  IFaturamento,
+  IPropsEquipe,
+  IProsEster,
+  IProsFuncionarios,
+} from '../dtos'
 import { fire } from '../config/firebase'
 
 interface ProviderProps {
@@ -20,7 +26,7 @@ interface ProsNotasData {
 interface PropsContext {
   estera: IProsEster[]
   equipes: IProsFuncionarios[]
-  GDS: IProsFuncionarios[]
+  GDS: IPropsEquipe[]
   ntReprogramada: IProsEster[]
   ntCancelada: IProsEster[]
   c4: IC4[]
@@ -129,33 +135,33 @@ export function NotasProvider({ children }: ProviderProps) {
   }, [])
 
   const GDS = React.useMemo(() => {
-    const ADM = []
-    const ALMOXARIFADO = []
-    const GD_17 = []
-    const GD_18 = []
-    const GD_19 = []
-    const GD_20 = []
-    const GD_21 = []
-    const GD_22 = []
-    const GD_23 = []
-    const GD_24 = []
-    const GD_25 = []
-    const GD_26 = []
-    const GD_27 = []
-    const GD_28 = []
-    const GD_29 = []
-    const GD_40 = []
-    const LM_01 = []
-    const LM_02 = []
-    const LM_03 = []
-    const LM_04 = []
-    const LV_30 = []
-    const LV_31 = []
-    const LV_32 = []
-    const LV_33 = []
-    const MONTADOR = []
-    const RESERVA = []
-    const VIABILIDADE = []
+    const ADM: IProsFuncionarios[] = []
+    const ALMOXARIFADO: IProsFuncionarios[] = []
+    const GD_17: IProsFuncionarios[] = []
+    const GD_18: IProsFuncionarios[] = []
+    const GD_19: IProsFuncionarios[] = []
+    const GD_20: IProsFuncionarios[] = []
+    const GD_21: IProsFuncionarios[] = []
+    const GD_22: IProsFuncionarios[] = []
+    const GD_23: IProsFuncionarios[] = []
+    const GD_24: IProsFuncionarios[] = []
+    const GD_25: IProsFuncionarios[] = []
+    const GD_26: IProsFuncionarios[] = []
+    const GD_27: IProsFuncionarios[] = []
+    const GD_28: IProsFuncionarios[] = []
+    const GD_29: IProsFuncionarios[] = []
+    const GD_40: IProsFuncionarios[] = []
+    const LM_01: IProsFuncionarios[] = []
+    const LM_02: IProsFuncionarios[] = []
+    const LM_03: IProsFuncionarios[] = []
+    const LM_04: IProsFuncionarios[] = []
+    const LV_30: IProsFuncionarios[] = []
+    const LV_31: IProsFuncionarios[] = []
+    const LV_32: IProsFuncionarios[] = []
+    const LV_33: IProsFuncionarios[] = []
+    const MONTADOR: IProsFuncionarios[] = []
+    const RESERVA: IProsFuncionarios[] = []
+    const VIABILIDADE: IProsFuncionarios[] = []
 
     const equipe = equipes.sort((a, b) => {
       if (b.equipe > a.equipe) {
@@ -278,7 +284,7 @@ export function NotasProvider({ children }: ProviderProps) {
       { id: '26', equipe: 'VIABILIDADE', dados: VIABILIDADE },
     ]
 
-    const gds = []
+    const gds: IPropsEquipe[] = []
 
     dados.forEach((h) => {
       const eq = h.dados.find((p) => p.equipe === h.equipe)
@@ -297,10 +303,10 @@ export function NotasProvider({ children }: ProviderProps) {
 
   const notasByDate = React.useCallback(
     (a: Date, b: Date) => {
-      const parcial = []
-      const executada = []
-      const planejada = []
-      const cancelada = []
+      const parcial: IProsEster[] = []
+      const executada: IProsEster[] = []
+      const planejada: IProsEster[] = []
+      const cancelada: IProsEster[] = []
       if (a.getTime() <= b.getTime()) {
         const ruslt = eachDayOfInterval({
           start: a,

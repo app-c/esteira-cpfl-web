@@ -27,7 +27,7 @@ export function Cards({ nota, pres, data, valor, deletar, submit }: Props) {
       <Text>MO: {mo}</Text>
       <Text>equipes: </Text>
       <ContainerButton>
-        <Botao title="Enviar" variant="success" />
+        <Botao pres={submit} title="Enviar" variant="success" />
         <Botao pres={pres} title="Editar" variant="secundary" />
         <Botao pres={deletar} title="Deletar" variant="danger" />
       </ContainerButton>

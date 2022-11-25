@@ -12,28 +12,15 @@ export const Container = styled.div`
   background: ${color.blue[50]};
 `
 
-export const ContainerButton = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 50%;
-  height: 3rem;
-  align-self: center;
-  justify-content: space-around;
-`
-
 export const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 25rem 1fr;
-  grid-template-rows: 30rem 1fr 1fr;
+  grid-template-rows: 25rem 1fr 1fr;
   grid-gap: 2rem;
   /* background-color: #fff; */
 
   .info {
     height: 100%;
-  }
-
-  .equipe {
-    height: 30rem;
   }
 
   .situation {
@@ -48,29 +35,29 @@ export const ContentGrid = styled.div`
 `
 
 export const ContainerEquipe = styled.div`
-  background: ${color.blue[10]};
+  background: ${color.blue[50]};
   padding: 5px;
 
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 6rem 6rem 6rem 6rem;
   grid-gap: 0.5rem;
 
-  div {
+  button {
     padding: 5px;
     display: flex;
     flex-direction: column;
-    background: ${color.green[10]};
     border-radius: 5px;
-    color: #fff;
+    /* border: 2px solid ${theme.color.red[10]}; */
 
     header {
       align-self: center;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
     p {
       margin-top: 5px;
+      font-size: 0.8rem;
     }
   }
 `
@@ -112,18 +99,22 @@ export const Content = styled.div`
   padding: 10px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 3rem 1fr 1fr;
   grid-gap: 1px;
-  background-color: ${color.blue[10]};
+  background-color: ${color.blue[50]};
+
+  h4 {
+    display: flex;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    color: #fff;
+    align-self: center;
+    justify-content: center;
+  }
 `
 
 export const ContentTitle = styled.div`
-  h4 {
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: 1;
-  }
-
   p {
     margin-top: 5px;
     margin-bottom: 5px;
@@ -137,6 +128,17 @@ export const ContentElement = styled.div`
   p {
     color: ${theme.color.dark[10]};
   }
+`
+
+export const ContainerButton = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+  height: 3rem;
+  align-self: center;
+  justify-content: space-around;
+
+  margin-top: 10px;
 `
 export const Button = styled.button`
   border: none;

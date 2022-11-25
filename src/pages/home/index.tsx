@@ -288,6 +288,8 @@ export function Home() {
             <div style={{ display: 'flex' }}>
               {preview.map((nt) => (
                 <Cards
+                  deletar={() => {}}
+                  submit={() => {}}
                   key={nt.id}
                   nota={nt.Nota}
                   valor={nt.MO}
@@ -313,6 +315,8 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.est.map((nt) => (
                   <Cards
+                    deletar={() => {}}
+                    submit={() => {}}
                     key={nt.id}
                     nota={nt.Nota}
                     valor={nt.MO}
@@ -341,6 +345,8 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.parc.map((nt) => (
                   <Cards
+                    deletar={() => {}}
+                    submit={() => {}}
                     key={nt.id}
                     nota={nt.Nota}
                     valor={nt.MO}
@@ -367,6 +373,8 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.canc.map((nt) => (
                   <Cards
+                    deletar={() => {}}
+                    submit={() => {}}
                     key={nt.id}
                     nota={nt.Nota}
                     valor={nt.MO}

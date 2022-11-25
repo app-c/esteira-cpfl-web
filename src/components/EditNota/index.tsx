@@ -1,5 +1,6 @@
+/* eslint-disable array-callback-return */
 import { Form } from '@unform/web'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { NotasContext } from '../../context/ListNotas'
 import { IPropsEquipe, IProsEster, IProsFuncionarios } from '../../dtos'
 import { theme } from '../../theme/theme'
@@ -35,7 +36,24 @@ export function EditNota({ nota, closed }: Props) {
       }
     }),
   )
-  console.log(GDS)
+  const [select, setSelect] = useState<IPropsEquipe[]>([])
+
+  const toggleSecection = useCallback(
+    (item: IPropsEquipe) => {
+      const index = select.findIndex((i) => i.id === item.id)
+      const arrSelect = [...select]
+      if (index !== -1) {
+        arrSelect.splice(index, 1)
+      } else {
+        arrSelect.push(item)
+      }
+
+      setSelect(arrSelect)
+    },
+    [select],
+  )
+
+  console.log(select)
 
   const handleSubimit = useCallback((data: object) => {
     console.log(data)
@@ -131,13 +149,23 @@ export function EditNota({ nota, closed }: Props) {
 
           <ContainerEquipe className="equipe">
             {bancoEquipe.map((h) => (
-              <div key={h.id}>
+              <button
+                style={{
+                  background:
+                    select.findIndex((i) => i.id === h.id) !== -1
+                      ? theme.color.green[10]
+                      : '#fff',
+                }}
+                key={h.id}
+                type="submit"
+                onClick={() => toggleSecection(h)}
+              >
                 <header>
-                  <h3>{h.equipe}</h3>
+                  <h4>{h.equipe}</h4>
                 </header>
                 <p>Meta Us: 24</p>
                 <p>Orçado: 10</p>
-              </div>
+              </button>
             ))}
           </ContainerEquipe>
 

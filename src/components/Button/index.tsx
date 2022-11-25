@@ -1,3 +1,4 @@
+import { HtmlHTMLAttributes } from 'react'
 import { ButtonContainer, ButtonProps, Title } from './styles'
 
 interface Props {

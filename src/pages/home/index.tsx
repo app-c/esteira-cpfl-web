@@ -35,6 +35,7 @@ import { Map } from '../../components/Map'
 import eachDayOfInterval from 'date-fns/fp/eachDayOfInterval'
 import { addDays, format } from 'date-fns'
 import { EditNota } from '../../components/EditNota'
+import * as Dialog from '@radix-ui/react-dialog'
 
 interface ProsModal {
   info: IProsEster
@@ -88,6 +89,14 @@ export function Home() {
       dados.push(nota)
     })
   }, [estera, preview])
+
+  const closedModalInfo = useCallback(() => {
+    setOpemModalEsteira({
+      info: {} as IProsEster,
+      modal: false,
+    })
+  }, [])
+  console.log(opemModalEsteira.modal)
 
   useEffect(() => {
     onSnapshot(db, (h) => {
@@ -226,7 +235,7 @@ export function Home() {
       />
 
       <Modal ariaHideApp={false} isOpen={opemModalEsteira.modal}>
-        <EditNota />
+        <EditNota closed={closedModalInfo} nota={opemModalEsteira.info} />
       </Modal>
 
       <File>

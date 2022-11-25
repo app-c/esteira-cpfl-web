@@ -4,8 +4,6 @@ import { theme } from './theme'
 
 const { color } = theme
 
-
-
 export const GlobalStyle = createGlobalStyle`
 
     * {
@@ -55,4 +53,3 @@ export const GlobalStyle = createGlobalStyle`
 
 
 `
-

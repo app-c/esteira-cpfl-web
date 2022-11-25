@@ -61,12 +61,6 @@ export interface IC4 {
   data: string
 }
 
-export interface IPropsEquipe {
-  id: string
-  equipe: string
-  mobilidade: boolean
-  dados: IProsFuncionarios[]
-}
 export interface IProsFuncionarios {
   id: string
   MOBILIDADE: boolean
@@ -75,6 +69,14 @@ export interface IProsFuncionarios {
   equipe: string
   matricula: number
   nome: string
+}
+
+export interface IPropsEquipe {
+  id: string
+  equipe: string
+  mobilidade: boolean
+  dados: IProsFuncionarios[]
+  faturamento: number
 }
 
 export interface IFaturamento {

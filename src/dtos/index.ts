@@ -85,3 +85,11 @@ export interface IFaturamento {
   id: string
   valor: number
 }
+
+export interface INtSituation {
+  name: string
+  sigla: string
+  id: number
+  color1: string
+  color: string
+}

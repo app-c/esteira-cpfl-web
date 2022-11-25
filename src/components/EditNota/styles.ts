@@ -3,6 +3,10 @@ import { theme } from '../../theme/theme'
 
 const { color } = theme
 
+interface PropsSituation {
+  color: string
+}
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -15,7 +19,7 @@ export const Container = styled.div`
 export const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 25rem 1fr;
-  grid-template-rows: 25rem 1fr 1fr;
+  grid-template-rows: 25rem 14rem 15rem 15rem;
   grid-gap: 2rem;
   /* background-color: #fff; */
 
@@ -62,12 +66,12 @@ export const ContainerEquipe = styled.div`
   }
 `
 export const ContainerSituaton = styled.div`
-  background-color: #fff;
+  /* background-color: #fff; */
 
   padding: 10px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 5rem 5rem;
+  grid-template-rows: 3rem 3rem;
   grid-gap: 1rem;
 
   /* height: 15rem; */
@@ -80,34 +84,45 @@ export const ContainerSituaton = styled.div`
     align-self: center;
     justify-content: center;
   }
-
-  div {
-    padding: 10px;
-    border-radius: 5px;
-    background: red;
-  }
+`
+export const ContentSituation = styled.button<PropsSituation>`
+  display: flex;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  color: #ffff;
+  padding: 10px;
+  border-radius: 5px;
+  background: ${({ color: h }) => h};
 `
 
 export const ContainerAlert = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
   background: red;
 `
 
 export const Content = styled.div`
+  grid-row-start: 1;
+  grid-row-end: 4;
   padding: 10px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 3rem 1fr 1fr;
-  grid-gap: 1px;
+  grid-template-rows: 40px 1fr 1fr 1fr;
+  grid-gap: 10px;
   background-color: ${color.blue[50]};
+
+  .info {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+  }
+
+  .obsPlanejamento {
+    background: blue;
+  }
 
   h4 {
     display: flex;
-    grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start: 1;
     color: #fff;
     align-self: center;
     justify-content: center;

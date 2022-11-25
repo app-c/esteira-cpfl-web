@@ -5,9 +5,9 @@ interface Props {
   nota: string
   data: string
   valor: number
-  pres: () => void
-  deletar: () => void
-  submit: () => void
+  pres?: () => void
+  deletar?: () => void
+  submit?: () => void
 }
 
 export function Cards({ nota, pres, data, valor, deletar, submit }: Props) {

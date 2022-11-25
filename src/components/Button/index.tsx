@@ -3,7 +3,7 @@ import { ButtonContainer, ButtonProps, Title } from './styles'
 
 interface Props {
   variant?: ButtonProps
-  pres: () => void
+  pres?: () => void
   title: string
 }
 

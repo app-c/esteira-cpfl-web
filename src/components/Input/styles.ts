@@ -9,7 +9,7 @@ export const Container = styled.div`
 
     flex: 1;
     border: 0;
-    background: ${color.blue[50]};
+    background: #bcdde5;
     border: none;
   }
 `

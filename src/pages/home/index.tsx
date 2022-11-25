@@ -16,6 +16,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  setDoc,
 } from 'firebase/firestore'
 import { fire } from '../../config/firebase'
 import {
@@ -195,29 +196,31 @@ export function Home() {
     }
   }, [dateA, dateB, estera, ntCancelada, ntParcial])
 
-  const upload = useCallback(async () => {}, [file])
+  const upload = useCallback(async () => {
+    // const cole = collection(fire, 'planejamento')
+    // ListNotas.est.forEach((h) => {
+    //   const rf = doc(cole, h.id)
+    //   setDoc(rf, h)
+    // })
+  }, [ListNotas])
 
-  const handleFile = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      setPreview([])
-      if (e.target.files) {
-        const fl = e.target.files[0]
-        const data = new FormData()
+  const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    setPreview([])
+    if (e.target.files) {
+      const fl = e.target.files[0]
+      const data = new FormData()
 
-        data.append('csv', fl)
+      data.append('csv', fl)
 
-        await api
-          .post('/', data)
-          .then((h) => {
-            setPreview(h.data)
-          })
-          .catch((h) => console.log(h))
-        // setFile(e.target.files[0])
-        upload()
-      }
-    },
-    [upload],
-  )
+      await api
+        .post('/', data)
+        .then((h) => {
+          setPreview(h.data)
+        })
+        .catch((h) => console.log(h))
+      // setFile(e.target.files[0])
+    }
+  }, [])
 
   useEffect(() => {
     setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
@@ -288,13 +291,10 @@ export function Home() {
             <div style={{ display: 'flex' }}>
               {preview.map((nt) => (
                 <Cards
-                  deletar={() => {}}
-                  submit={() => {}}
                   key={nt.id}
                   nota={nt.Nota}
                   valor={nt.MO}
                   data={nt.Dt_programação}
-                  pres={() => {}}
                 />
               ))}
             </div>
@@ -316,7 +316,7 @@ export function Home() {
                 {ListNotas.est.map((nt) => (
                   <Cards
                     deletar={() => {}}
-                    submit={() => {}}
+                    submit={upload}
                     key={nt.id}
                     nota={nt.Nota}
                     valor={nt.MO}

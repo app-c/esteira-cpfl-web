@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, useEffect, useRef } from 'react'
-import { Container, Title } from './styles'
+import { Container } from './styles'
 import { useField } from '@unform/core'
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
@@ -7,7 +7,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
 }
 export function Input({ name, ...rest }: Props) {
   const inputRef = useRef(null)
-  const { fieldName, defaultValue, error, registerField } = useField(name)
+  const { fieldName, defaultValue, registerField } = useField(name)
 
   useEffect(() => {
     registerField({

@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion'
 import styled from 'styled-components'
+import { theme } from '../../theme/theme'
 
 export const Container = styled.div`
   width: 300px;
@@ -14,6 +14,15 @@ export const Container = styled.div`
   &:hover {
     width: 310px;
   }
+`
+
+export const BoxEquipe = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 2rem 2rem;
+  background-color: ${theme.color.white[100]};
+  border-radius: 5px;
+  padding: 10px;
 `
 
 export const Header = styled.div`

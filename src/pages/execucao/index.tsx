@@ -33,7 +33,7 @@ interface ProsModal {
   modal: boolean
 }
 
-export function Home() {
+export function Execucao() {
   const motionRef = useRef<any>()
   const motionRefPreview = useRef<any>()
   const [width, setWidth] = useState(0)

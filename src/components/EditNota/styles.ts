@@ -13,7 +13,7 @@ export const Container = styled.div`
 
   width: 100%;
 
-  background: ${color.blue[50]};
+  background: #d3d3d3;
 `
 
 export const ContentGrid = styled.div`
@@ -22,10 +22,6 @@ export const ContentGrid = styled.div`
   grid-template-rows: 25rem 14rem 15rem 15rem;
   grid-gap: 2rem;
   /* background-color: #fff; */
-
-  .info {
-    height: 100%;
-  }
 
   .situation {
     grid-column-start: 2;
@@ -39,7 +35,6 @@ export const ContentGrid = styled.div`
 `
 
 export const ContainerEquipe = styled.div`
-  background: ${color.blue[50]};
   padding: 5px;
 
   display: grid;
@@ -52,6 +47,10 @@ export const ContainerEquipe = styled.div`
     display: flex;
     flex-direction: column;
     border-radius: 5px;
+
+    &:hover {
+      opacity: 0.7;
+    }
     /* border: 2px solid ${theme.color.red[10]}; */
 
     header {
@@ -86,6 +85,7 @@ export const ContainerSituaton = styled.div`
   }
 `
 export const ContentSituation = styled.button<PropsSituation>`
+  border: 2px solid #555555;
   display: flex;
   height: 2rem;
   align-items: center;
@@ -94,13 +94,39 @@ export const ContentSituation = styled.button<PropsSituation>`
   padding: 10px;
   border-radius: 5px;
   background: ${({ color: h }) => h};
+
+  &:hover {
+    opacity: 0.6;
+  }
 `
 
 export const ContainerAlert = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr;
-  background: red;
+  background: ${color.orange[50]};
+  border-radius: 10px;
+  padding: 10px;
+  grid-gap: 10px;
+
+  h4 {
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    grid-column-start: 1;
+    grid-column-end: 5;
+  }
+  button {
+    border: 2px solid ${theme.color.dark[10]};
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 `
 
 export const Content = styled.div`
@@ -108,9 +134,7 @@ export const Content = styled.div`
   grid-row-end: 4;
   padding: 10px;
   display: grid;
-  grid-template-rows: 40px 1fr 1fr 1fr;
   grid-gap: 10px;
-  background-color: ${color.blue[50]};
 
   .info {
     display: grid;
@@ -118,12 +142,36 @@ export const Content = styled.div`
   }
 
   .obsPlanejamento {
-    background: blue;
+    display: flex;
+    flex-direction: column;
+    background: #95b6c0;
+    /* height: 7rem; */
+    border-radius: 10px;
+    padding: 5px;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+
+    textarea {
+      margin-top: 10px;
+    }
+  }
+
+  .obsExecucao {
+    display: grid;
+    background: #c5d377;
+    height: 7rem;
+  }
+
+  .obsFocal {
+    display: grid;
+    background: #77bdd3;
+    height: 7rem;
   }
 
   h4 {
     display: flex;
-    color: #fff;
+    color: #00021f;
     align-self: center;
     justify-content: center;
   }
@@ -133,7 +181,7 @@ export const ContentTitle = styled.div`
   p {
     margin-top: 5px;
     margin-bottom: 5px;
-    color: #ffff;
+    color: #00032e;
     font-weight: bold;
   }
 `

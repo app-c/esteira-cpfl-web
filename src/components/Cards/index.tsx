@@ -1,5 +1,13 @@
+import { IPropsEquipe } from '../../dtos'
 import { Botao } from '../Button'
-import { Container, ContainerButton, Header, Text, TextNota } from './styles'
+import {
+  BoxEquipe,
+  Container,
+  ContainerButton,
+  Header,
+  Text,
+  TextNota
+} from './styles'
 
 interface Props {
   nota: string
@@ -8,9 +16,18 @@ interface Props {
   pres?: () => void
   deletar?: () => void
   submit?: () => void
+  equipe: IPropsEquipe[]
 }
 
-export function Cards({ nota, pres, data, valor, deletar, submit }: Props) {
+export function Cards({
+  nota,
+  pres,
+  data,
+  valor,
+  deletar,
+  submit,
+  equipe,
+}: Props) {
   const numero = String(valor)
   const val = numero.replace(/([0-9]{0})$/g, '.$100')
   const mo = Number(val).toLocaleString('pt-br', {
@@ -26,6 +43,11 @@ export function Cards({ nota, pres, data, valor, deletar, submit }: Props) {
       <Text>data: {data}</Text>
       <Text>MO: {mo}</Text>
       <Text>equipes: </Text>
+      <BoxEquipe>
+        {equipe.map((h) => (
+          <p key={h.id}>{h.equipe}</p>
+        ))}
+      </BoxEquipe>
       <ContainerButton>
         <Botao pres={submit} title="Enviar" variant="success" />
         <Botao pres={pres} title="Editar" variant="secundary" />

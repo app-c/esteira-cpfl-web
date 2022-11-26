@@ -93,3 +93,9 @@ export interface INtSituation {
   color1: string
   color: string
 }
+
+export interface IAlert {
+  name: string
+  ico: string
+  id: number
+}

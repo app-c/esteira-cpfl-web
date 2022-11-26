@@ -1,16 +1,17 @@
+import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
+import { NotasProvider } from './context/ListNotas'
+import { Router } from './routes'
 import { GlobalStyle } from './theme/global'
 import { theme } from './theme/theme'
-import { Home } from './pages/home'
-import { NotasProvider } from './context/ListNotas'
 
 export function App() {
   return (
     <ThemeProvider theme={theme}>
       <NotasProvider>
-        <div className="App">
-          <Home />
-        </div>
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
       </NotasProvider>
 
       <GlobalStyle />

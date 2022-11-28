@@ -49,10 +49,13 @@ export interface IProsEster {
     | 'retorno_parcial'
     | 'nt_parcial'
     | 'nt_cancelada'
-  OBSERVACAO?: string
   PORCENTUAL?: number
-  Dt_parcial?: string
-  Dt_cancelada?: string
+  // Dt_parcial?: string
+  // Dt_cancelada?: string
+  obsPlanejamento?: string
+  obsExecuçao: string
+  obsTratativa: string
+  updateAt: string
 }
 
 export interface IC4 {

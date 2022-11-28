@@ -5,22 +5,18 @@ import { collection, doc, updateDoc } from 'firebase/firestore'
 import { useCallback, useContext, useState } from 'react'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
-import { IAlert, INtSituation, IPropsEquipe, IProsEster } from '../../dtos'
+import { INtSituation, IPropsEquipe, IProsEster } from '../../dtos'
 import { theme } from '../../theme/theme'
-import { alert as Alert } from '../../utils/alert'
-import { notaSituation } from '../../utils/notaSituation'
 import { Input } from '../Input/Input'
 import {
+  BoxOfficer,
   Button,
   Container,
-  ContainerAlert,
   ContainerButton,
   ContainerEquipe,
-  ContainerSituaton,
   Content,
   ContentElement,
   ContentGrid,
-  ContentSituation,
   ContentTitle
 } from './styles'
 interface Props {
@@ -28,7 +24,19 @@ interface Props {
   closed: () => void
 }
 
-export function EditNota({ nota, closed }: Props) {
+interface PropsOfficer {
+  name: string
+  id: string
+}
+
+const Officer = [
+  { name: 'Adelino', id: '1' },
+  { name: 'Diego', id: '2' },
+  { name: 'Douglas', id: '3' },
+  { name: 'Paulo', id: '4' },
+]
+
+export function EditNotaExec({ nota, closed }: Props) {
   const { GDS } = useContext(NotasContext)
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
     GDS.filter((h) => {
@@ -50,8 +58,7 @@ export function EditNota({ nota, closed }: Props) {
 
   const eqp = nota.EQUIPE || []
   const [select, setSelect] = useState<IPropsEquipe[]>(eqp)
-  const [selectAlert, setSelectAlert] = useState<IAlert[]>(Alert)
-  const [obsPlanejamento, setObsPlanejamento] = useState(nota.obsPlanejamento)
+  const [officer, setOfficer] = useState(nota.SUPERVISOR || 'nenhum')
 
   const toggleSecection = useCallback(
     (item: IPropsEquipe) => {
@@ -68,29 +75,13 @@ export function EditNota({ nota, closed }: Props) {
     [select],
   )
 
-  const toggleSecectionAlert = useCallback(
-    (item: IAlert) => {
-      const index = selectAlert.findIndex((i) => i.id === item.id)
-      const arrSelect = [...selectAlert]
-      if (index !== -1) {
-        arrSelect.splice(index, 1)
-      } else {
-        arrSelect.push(item)
-      }
-
-      setSelectAlert(arrSelect)
-    },
-    [selectAlert],
-  )
-
   const handleSubimit = useCallback(
     (data: object) => {
       const dados = {
         ...data,
         ...nota,
         EQUIPE: select,
-        ntSituation,
-        obsPlanejamento,
+        SUPERVISOR: officer,
         obsExecuçao: '',
         obsTratativa: '',
         updateAt: format(new Date(), 'dd/MM/yyyy'),
@@ -100,11 +91,11 @@ export function EditNota({ nota, closed }: Props) {
 
       setNotaUpdade(dados)
     },
-    [nota, select, ntSituation, obsPlanejamento],
+    [nota, select, officer],
   )
 
   const handleUpdade = useCallback(() => {
-    const cole = collection(fire, 'planejamento')
+    const cole = collection(fire, 'notas')
     const ref = doc(cole, nota.id)
     const up = notaUpdate || {}
 
@@ -211,18 +202,15 @@ export function EditNota({ nota, closed }: Props) {
             </div>
             <div className="obsPlanejamento">
               <p>Observações do planejamento:</p>
-              <textarea
-                onChange={(h) => setObsPlanejamento(h.currentTarget.value)}
-                value={obsPlanejamento}
-                name="planejamento"
-                id="1"
-                cols={40}
-                rows={5}
-              ></textarea>
+              <div>
+                <p>{nota.obsPlanejamento}</p>
+              </div>
             </div>
+
             <div className="obsFocal">
               <p>Observações do focal</p>
             </div>
+
             <div className="obsExecucao">
               <p>Observações da execução:</p>
             </div>
@@ -250,36 +238,22 @@ export function EditNota({ nota, closed }: Props) {
             ))}
           </ContainerEquipe>
 
-          <ContainerSituaton className="situation">
-            <h4>Situação da nota</h4>
-            {notaSituation.map((h) => (
-              <ContentSituation
-                onClick={() => setNtSituation(h)}
-                color={ntSituation.sigla === h.sigla ? h.color : h.color1}
-                key={h.id}
-              >
-                <p>{h.sigla}</p>
-              </ContentSituation>
-            ))}
-          </ContainerSituaton>
-
-          <ContainerAlert className="alert">
-            <h4>Alertas</h4>
-            {Alert.map((h) => (
+          <BoxOfficer>
+            {Officer.map((h) => (
               <button
+                onClick={() => setOfficer(h.name)}
+                key={h.id}
                 style={{
                   background:
-                    selectAlert.findIndex((i) => i.id === h.id) !== -1
-                      ? theme.color.orange[50]
-                      : theme.color.orange[10],
+                    officer === h.name
+                      ? theme.color.blue[50]
+                      : theme.color.white[50],
                 }}
-                onClick={() => toggleSecectionAlert(h)}
-                key={h.id}
               >
-                <p>{h.name}</p>
+                <h4>{h.name}</h4>
               </button>
             ))}
-          </ContainerAlert>
+          </BoxOfficer>
         </ContentGrid>
         <ContainerButton>
           <Button

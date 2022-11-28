@@ -1,6 +1,13 @@
+/* eslint-disable prettier/prettier */
 import { addDays, format } from 'date-fns'
 import eachDayOfInterval from 'date-fns/fp/eachDayOfInterval'
-import { addDoc, collection, onSnapshot } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  updateDoc
+} from 'firebase/firestore'
 import {
   ChangeEvent,
   useCallback,
@@ -13,7 +20,7 @@ import Modal from 'react-modal'
 import { api } from '../../api'
 import { Botao } from '../../components/Button'
 import { Cards } from '../../components/Cards'
-import { EditNota } from '../../components/EditNota'
+import { EditNotaExec } from '../../components/EditNotaExec'
 import { Header } from '../../components/Header'
 import { Map } from '../../components/Map'
 import { fire } from '../../config/firebase'
@@ -27,7 +34,6 @@ import {
   File,
   Inner
 } from './styles'
-
 interface ProsModal {
   info: IProsEster
   modal: boolean
@@ -57,7 +63,7 @@ export function Execucao() {
 
   const [modal, setModal] = useState(false)
 
-  const db = collection(fire, 'planejamento')
+  const db = collection(fire, 'notas')
   const dp = collection(fire, 'nt-parcial')
   const dc = collection(fire, 'nt-cancelada')
 
@@ -186,13 +192,13 @@ export function Execucao() {
     }
   }, [dateA, dateB, estera, ntCancelada, ntParcial])
 
-  const upload = useCallback(async () => {
-    // const cole = collection(fire, 'planejamento')
-    // ListNotas.est.forEach((h) => {
-    //   const rf = doc(cole, h.id)
-    //   setDoc(rf, h)
-    // })
-  }, [ListNotas])
+  const upload = useCallback(async (id: string) => {
+    const cole = collection(fire, 'notas')
+    const rf = doc(cole, id)
+    updateDoc(rf, {
+      situation: 'processo',
+    })
+  }, [])
 
   const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     setPreview([])
@@ -228,7 +234,7 @@ export function Execucao() {
       />
 
       <Modal ariaHideApp={false} isOpen={opemModalEsteira.modal}>
-        <EditNota closed={closedModalInfo} nota={opemModalEsteira.info} />
+        <EditNotaExec closed={closedModalInfo} nota={opemModalEsteira.info} />
       </Modal>
 
       <File>
@@ -281,7 +287,7 @@ export function Execucao() {
             <div style={{ display: 'flex' }}>
               {preview.map((nt) => (
                 <Cards
-                  equipe={nt.EQUIPE | []}
+                  equipe={nt.EQUIPE || []}
                   key={nt.id}
                   nota={nt.Nota}
                   valor={nt.MO}
@@ -306,9 +312,9 @@ export function Execucao() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.est.map((nt) => (
                   <Cards
-                    equipe={nt.EQUIPE}
+                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
-                    submit={upload}
+                    submit={() => upload(nt.id)}
                     key={nt.id}
                     nota={nt.Nota}
                     valor={nt.MO}
@@ -366,6 +372,7 @@ export function Execucao() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.canc.map((nt) => (
                   <Cards
+                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
                     submit={() => {}}
                     key={nt.id}

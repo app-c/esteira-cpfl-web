@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IPropsEquipe } from '../../dtos'
 import { Botao } from '../Button'
 import {
@@ -26,7 +27,7 @@ export function Cards({
   valor,
   deletar,
   submit,
-  equipe,
+  equipe = [],
 }: Props) {
   const numero = String(valor)
   const val = numero.replace(/([0-9]{0})$/g, '.$100')

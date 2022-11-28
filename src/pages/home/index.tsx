@@ -281,7 +281,7 @@ export function Home() {
             <div style={{ display: 'flex' }}>
               {preview.map((nt) => (
                 <Cards
-                  equipe={nt.EQUIPE | []}
+                  equipe={nt.EQUIPE || []}
                   key={nt.id}
                   nota={nt.Nota}
                   valor={nt.MO}
@@ -306,7 +306,7 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.est.map((nt) => (
                   <Cards
-                    equipe={nt.EQUIPE}
+                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
                     submit={upload}
                     key={nt.id}
@@ -366,6 +366,7 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.canc.map((nt) => (
                   <Cards
+                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
                     submit={() => {}}
                     key={nt.id}

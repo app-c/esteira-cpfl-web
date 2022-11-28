@@ -4,6 +4,7 @@ import { theme } from '../../theme/theme'
 const { color } = theme
 
 export const Container = styled.div`
+  margin-top: -2px;
   input {
     padding: 0 5px;
 
@@ -11,7 +12,10 @@ export const Container = styled.div`
     border: 0;
     background: #bcdde5;
     border: none;
+    font-size: 14px;
   }
 `
 
-export const Title = styled.h1``
+export const Title = styled.h1`
+  font-size: 14px;
+`

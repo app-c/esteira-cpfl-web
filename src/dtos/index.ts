@@ -49,6 +49,7 @@ export interface IProsEster {
     | 'retorno_parcial'
     | 'nt_parcial'
     | 'nt_cancelada'
+    | 'preview'
   PORCENTUAL?: number
   // Dt_parcial?: string
   // Dt_cancelada?: string

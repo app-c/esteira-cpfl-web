@@ -218,9 +218,15 @@ export function Home() {
       await api
         .post('/', data)
         .then((h) => {
-          setPreview(h.data)
+          const rs = h.data.map((p: IProsEster) => {
+            return {
+              ...p,
+              situation: 'preview',
+            }
+          })
+          setPreview(rs)
         })
-        .catch((h) => console.log(h))
+        .catch((h) => console.log(h.response))
       // setFile(e.target.files[0])
     }
   }, [])

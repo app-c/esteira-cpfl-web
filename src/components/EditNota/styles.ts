@@ -13,7 +13,7 @@ export const Container = styled.div`
 
   width: 100%;
 
-  background: #d3d3d3;
+  background: ${theme.color.dark[50]};
 `
 
 export const ContentGrid = styled.div`
@@ -82,6 +82,7 @@ export const ContainerSituaton = styled.div`
     grid-column-end: 8;
     align-self: center;
     justify-content: center;
+    color: ${theme.color.white[50]};
   }
 `
 export const ContentSituation = styled.button<PropsSituation>`
@@ -104,7 +105,6 @@ export const ContainerAlert = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr;
-  background: ${color.orange[50]};
   border-radius: 10px;
   padding: 10px;
   grid-gap: 10px;
@@ -171,7 +171,7 @@ export const Content = styled.div`
 
   h4 {
     display: flex;
-    color: #00021f;
+    color: #9c9c9e;
     align-self: center;
     justify-content: center;
   }
@@ -181,8 +181,8 @@ export const ContentTitle = styled.div`
   p {
     margin-top: 5px;
     margin-bottom: 5px;
-    color: #00032e;
-    font-weight: bold;
+    color: ${theme.color.white[50]};
+    font-weight: 400;
   }
 `
 

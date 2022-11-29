@@ -18,8 +18,8 @@ export const ButtonContainer = styled.button<PropsButtonContainer>`
   border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 10px;
-  font-weight: 800;
-  padding: 0 10px;
+  font-weight: 400;
+  padding: 5px 10px;
   border: none;
   min-width: 4rem;
 

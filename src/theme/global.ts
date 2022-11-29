@@ -30,9 +30,9 @@ export const GlobalStyle = createGlobalStyle`
 
     body {
 
-        color: ${color.dark[10]};
+        color: ${color.white[50]};
 
-        background-color: ${color.white[50]};
+        background-color: ${color.dark[50]};
 
         -webkit-font-smoothing: antialiased;
 

@@ -91,8 +91,8 @@ export function EditNota({ nota, closed }: Props) {
         EQUIPE: select,
         ntSituation,
         obsPlanejamento,
-        obsExecuçao: '',
-        obsTratativa: '',
+        obsExecuçao: nota.obsExecuçao || '',
+        obsTratativa: nota.obsTratativa || '',
         updateAt: format(new Date(), 'dd/MM/yyyy'),
       }
 
@@ -221,7 +221,7 @@ export function EditNota({ nota, closed }: Props) {
               ></textarea>
             </div>
             <div className="obsFocal">
-              <p>Observações do focal</p>
+              <p>Observações da tratativa</p>
             </div>
             <div className="obsExecucao">
               <p>Observações da execução:</p>

@@ -15,6 +15,7 @@ interface Props {
   pres?: () => void
   deletar?: () => void
   submit?: () => void
+  buton: boolean
 }
 
 export function Cards({
@@ -22,6 +23,7 @@ export function Cards({
   pres,
   deletar,
   submit,
+  buton
 }: Props) {
   const numero = String(nota.MO)
   const val = numero.replace(/([0-9]{0})$/g, '.$100')
@@ -38,25 +40,32 @@ export function Cards({
 
       <Text>data: {nota.Dt_programação}</Text>
       <Text>MO: {mo}</Text>
-      <Text>encarregado: {nota.SUPERVISOR} </Text>
-      <Text>equipes: </Text>
-      <BoxEquipe>
-        {equipe.map((h) => (
-          <p key={h.id}>{h.equipe}</p>
-        ))}
-      </BoxEquipe>
-      <ContainerButton>
-        <Botao pres={submit} title="Enviar" variant="success" />
+      <Text>Documento: {nota.TLE}</Text>
 
-        {nota.situation === 'estera'  && (
-          <Botao pres={pres} title="Editar" variant="secundary" />
-        )}
 
-        {nota.situation === 'parcial'  && (
-          <Botao pres={pres} title="Editar" variant="secundary" />
-        )}
-        <Botao pres={deletar} title="Deletar" variant="danger" />
-      </ContainerButton>
+      {nota.situation !== 'preview' && (
+        <div>
+          <Text>encarregado: {nota.SUPERVISOR} </Text>
+          <Text>equipes: </Text>
+          <BoxEquipe>
+            {equipe.map((h) => (
+              <p key={h.id}>{h.equipe}</p>
+            ))}
+          </BoxEquipe>
+          <ContainerButton>
+            <Botao pres={submit} title="Enviar" variant="success" />
+
+            {nota.situation === 'estera'  && (
+              <Botao pres={pres} title="Editar" variant="secundary" />
+            )}
+
+            {nota.situation === 'parcial'  && (
+              <Botao pres={pres} title="Editar" variant="secundary" />
+            )}
+            <Botao pres={deletar} title="Deletar" variant="danger" />
+          </ContainerButton>
+        </div>
+      )}
     </Container>
   )
 }

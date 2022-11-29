@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { IPropsEquipe } from '../../dtos'
+import { IProsEster } from '../../dtos'
 import { Botao } from '../Button'
 import {
   BoxEquipe,
@@ -11,38 +11,34 @@ import {
 } from './styles'
 
 interface Props {
-  nota: string
-  data: string
-  valor: number
+  nota: IProsEster
   pres?: () => void
   deletar?: () => void
   submit?: () => void
-  equipe: IPropsEquipe[]
 }
 
 export function Cards({
   nota,
   pres,
-  data,
-  valor,
   deletar,
   submit,
-  equipe = [],
 }: Props) {
-  const numero = String(valor)
+  const numero = String(nota.MO)
   const val = numero.replace(/([0-9]{0})$/g, '.$100')
   const mo = Number(val).toLocaleString('pt-br', {
     style: 'currency',
     currency: 'BRL',
   })
+  const equipe = nota.EQUIPE || []
   return (
     <Container>
       <Header>
-        <TextNota>{nota}</TextNota>
+        <TextNota>{nota.Nota}</TextNota>
       </Header>
 
-      <Text>data: {data}</Text>
+      <Text>data: {nota.Dt_programação}</Text>
       <Text>MO: {mo}</Text>
+      <Text>encarregado: {nota.SUPERVISOR} </Text>
       <Text>equipes: </Text>
       <BoxEquipe>
         {equipe.map((h) => (
@@ -51,7 +47,14 @@ export function Cards({
       </BoxEquipe>
       <ContainerButton>
         <Botao pres={submit} title="Enviar" variant="success" />
-        <Botao pres={pres} title="Editar" variant="secundary" />
+
+        {nota.situation === 'estera'  && (
+          <Botao pres={pres} title="Editar" variant="secundary" />
+        )}
+
+        {nota.situation === 'parcial'  && (
+          <Botao pres={pres} title="Editar" variant="secundary" />
+        )}
         <Botao pres={deletar} title="Deletar" variant="danger" />
       </ContainerButton>
     </Container>

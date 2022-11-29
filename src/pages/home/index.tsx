@@ -54,6 +54,7 @@ export function Home() {
 
   const [dateA, setDateA] = useState('')
   const [dateB, setDateB] = useState('')
+  const [search, setSearch] = useState('')
 
   const [modal, setModal] = useState(false)
 
@@ -179,12 +180,24 @@ export function Home() {
         })
       })
     }
+
+    const est =
+      search !== '' ? esteira.filter((h) => h.Nota.includes(search)) : esteira
+
+    const parc =
+      search !== '' ? parcial.filter((h) => h.Nota.includes(search)) : parcial
+
+    const canc =
+      search !== ''
+        ? cancelada.filter((h) => h.Nota.includes(search))
+        : cancelada
+
     return {
-      est: esteira,
-      parc: parcial,
-      canc: cancelada,
+      est,
+      parc,
+      canc,
     }
-  }, [dateA, dateB, estera, ntCancelada, ntParcial])
+  }, [dateA, dateB, estera, ntCancelada, ntParcial, search])
 
   const upload = useCallback(async () => {
     // const cole = collection(fire, 'planejamento')
@@ -223,6 +236,7 @@ export function Home() {
   return (
     <Container>
       <Header
+        value={(h: string) => setSearch(h)}
         dateA={(h: string) => setDateA(h)}
         dateB={(h: string) => setDateB(h)}
       />
@@ -280,13 +294,7 @@ export function Home() {
           >
             <div style={{ display: 'flex' }}>
               {preview.map((nt) => (
-                <Cards
-                  equipe={nt.EQUIPE || []}
-                  key={nt.id}
-                  nota={nt.Nota}
-                  valor={nt.MO}
-                  data={nt.Dt_programação}
-                />
+                <Cards key={nt.id} nota={nt} />
               ))}
             </div>
           </Inner>
@@ -306,13 +314,10 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.est.map((nt) => (
                   <Cards
-                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
                     submit={upload}
                     key={nt.id}
-                    nota={nt.Nota}
-                    valor={nt.MO}
-                    data={nt.Dt_programação}
+                    nota={nt}
                     pres={() => {
                       setOpemModalEsteira({ info: nt, modal: true })
                     }}
@@ -337,13 +342,10 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.parc.map((nt) => (
                   <Cards
-                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
                     submit={() => {}}
                     key={nt.id}
-                    nota={nt.Nota}
-                    valor={nt.MO}
-                    data={nt.Dt_programação}
+                    nota={nt}
                     pres={() => {}}
                   />
                 ))}
@@ -366,13 +368,10 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.canc.map((nt) => (
                   <Cards
-                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
                     submit={() => {}}
                     key={nt.id}
-                    nota={nt.Nota}
-                    valor={nt.MO}
-                    data={nt.Dt_programação}
+                    nota={nt}
                     pres={() => {}}
                   />
                 ))}
@@ -402,7 +401,7 @@ export function Home() {
               equipes={h.EQUIPE || []}
               cidade={h.cidade}
               encarregado={h.SUPERVISOR || ''}
-              obs={h.OBSERVACAO || ''}
+              obs={h.obsExecuçao || ''}
               tes={h.TLE}
             />
           ))}
@@ -420,7 +419,7 @@ export function Home() {
               cidade={h.cidade}
               encarregado={h.SUPERVISOR || ''}
               equipes={h.EQUIPE || []}
-              obs={h.OBSERVACAO || ''}
+              obs={h.obsExecuçao || ''}
               tes={h.TLE}
             />
           ))}
@@ -438,7 +437,7 @@ export function Home() {
               cidade={h.cidade}
               equipes={h.EQUIPE || []}
               encarregado={h.SUPERVISOR || ''}
-              obs={h.OBSERVACAO || ''}
+              obs={h.obsExecuçao || ''}
               tes={h.TLE}
             />
           ))}

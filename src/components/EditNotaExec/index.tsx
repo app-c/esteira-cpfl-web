@@ -5,7 +5,7 @@ import { collection, doc, updateDoc } from 'firebase/firestore'
 import { useCallback, useContext, useState } from 'react'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
-import { INtSituation, IPropsEquipe, IProsEster } from '../../dtos'
+import { IPropsEquipe, IProsEster } from '../../dtos'
 import { theme } from '../../theme/theme'
 import { Input } from '../Input/Input'
 import {
@@ -50,9 +50,7 @@ export function EditNotaExec({ nota, closed }: Props) {
     }),
   )
 
-  const [ntSituation, setNtSituation] = useState<INtSituation>(
-    {} as INtSituation,
-  )
+  const [obsFocal, setObsFocal] = useState(nota.obsTratativa)
 
   const [notaUpdate, setNotaUpdade] = useState<IProsEster>()
 
@@ -91,7 +89,7 @@ export function EditNotaExec({ nota, closed }: Props) {
 
       setNotaUpdade(dados)
     },
-    [nota, select, officer],
+    [nota, select, officer, obsFocal],
   )
 
   const handleUpdade = useCallback(() => {
@@ -200,15 +198,12 @@ export function EditNotaExec({ nota, closed }: Props) {
 /> */}
               </ContentElement>
             </div>
+
             <div className="obsPlanejamento">
               <p>Observações do planejamento:</p>
               <div>
                 <p>{nota.obsPlanejamento}</p>
               </div>
-            </div>
-
-            <div className="obsFocal">
-              <p>Observações do focal</p>
             </div>
 
             <div className="obsExecucao">

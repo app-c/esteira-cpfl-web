@@ -4,8 +4,10 @@ import eachDayOfInterval from 'date-fns/fp/eachDayOfInterval'
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   onSnapshot,
+  setDoc,
   updateDoc
 } from 'firebase/firestore'
 import {
@@ -17,12 +19,14 @@ import {
   useState
 } from 'react'
 import Modal from 'react-modal'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../../api'
 import { Botao } from '../../components/Button'
 import { Cards } from '../../components/Cards'
 import { EditNotaExec } from '../../components/EditNotaExec'
 import { Header } from '../../components/Header'
 import { Map } from '../../components/Map'
+import { ModalTratativa } from '../../components/ModalTratativa'
 import { fire } from '../../config/firebase'
 import { IProsEster } from '../../dtos'
 import {
@@ -40,12 +44,21 @@ interface ProsModal {
 }
 
 export function Execucao() {
+  const navigate = useNavigate()
+
   const motionRef = useRef<any>()
+  const motionProc = useRef<any>()
+  const motionExec = useRef<any>()
+  const motionParc = useRef<any>()
+  const motionCanc = useRef<any>()
   const motionRefPreview = useRef<any>()
+
   const [width, setWidth] = useState(0)
   const [widthPreview, setWidthPreview] = useState(0)
+  const [widthExec, setWidthExec] = useState(0)
+  const [widthParc, setWidthParc] = useState(0)
+  const [widthCanc, setWidthCanc] = useState(0)
 
-  const [notas, setNotas] = useState<IProsEster[]>([])
   const [preview, setPreview] = useState<IProsEster[]>([])
   const [estera, setEstera] = useState<IProsEster[]>([])
   const [ntParcial, setNtParcial] = useState<IProsEster[]>([])
@@ -58,8 +71,14 @@ export function Execucao() {
     modal: false,
   })
 
+  const [opemModalTratativa, setOpemModalTratativa] = useState<ProsModal>({
+    info: {} as IProsEster,
+    modal: false
+  })
+
   const [dateA, setDateA] = useState('')
   const [dateB, setDateB] = useState('')
+  const [search, setSearch] = useState('')
 
   const [modal, setModal] = useState(false)
 
@@ -93,7 +112,13 @@ export function Execucao() {
       modal: false,
     })
   }, [])
-  console.log(opemModalEsteira.modal)
+
+  const closedModalTratativa = useCallback(() => {
+    setOpemModalTratativa({
+      info: {} as IProsEster,
+      modal: false,
+    })
+  }, [])
 
   useEffect(() => {
     onSnapshot(db, (h) => {
@@ -154,6 +179,7 @@ export function Execucao() {
     const parcial: IProsEster[] = []
     const cancelada: IProsEster[] = []
 
+
     const date = addDays(new Date(dateA), 1)
     const datB = addDays(new Date(dateB), 1)
     console.log(dateA)
@@ -185,12 +211,36 @@ export function Execucao() {
         })
       })
     }
+
+    const filEst = search !== ''
+    ? esteira.filter(h => h.Nota.includes(search)) 
+    : esteira
+
+    const filParc = search !== ''
+    ? parcial.filter(h => h.Nota.includes(search)) 
+    : parcial
+
+    const filcanc = search !== ''
+    ? cancelada.filter(h => h.Nota.includes(search)) 
+    : cancelada
+
+    const proc = filEst.filter(h => h.situation === 'estera')
+    const exec = filEst.filter(h => h.situation === 'processo')
+    const execP = filEst.filter(h => h.situation === 'parcial')
+    const execE = filEst.filter(h => h.situation === 'executada')
+    const execC = filEst.filter(h => h.situation === 'cancelada')
+
     return {
-      est: esteira,
-      parc: parcial,
-      canc: cancelada,
+      esteira,
+      proc,
+      exec,
+      execP,
+      execE,
+      execC,
+      parc: filParc,
+      canc: filcanc,
     }
-  }, [dateA, dateB, estera, ntCancelada, ntParcial])
+  }, [dateA, dateB, estera, ntCancelada, ntParcial, search])
 
   const upload = useCallback(async (id: string) => {
     const cole = collection(fire, 'notas')
@@ -198,6 +248,30 @@ export function Execucao() {
     updateDoc(rf, {
       situation: 'processo',
     })
+  }, [])
+
+  const handleAddParcial = useCallback(async(item: IProsEster) => {
+    const cole = collection(fire, 'nt-parcial')
+    const rf = doc(cole, item.id)
+
+    const dados = {
+      ...item,
+      updateAt: format(new Date(), 'dd/MM/yyyy')
+    }
+
+    setDoc(rf, dados)
+  }, [])
+
+  const handleAddCancelada = useCallback(async(item: IProsEster) => {
+    const cole = collection(fire, 'nt-cancelada')
+    const rf = doc(cole, item.id)
+
+    const dados = {
+      ...item,
+      updateAt: format(new Date(), 'dd/MM/yyyy')
+    }
+
+    setDoc(rf, dados)
   }, [])
 
   const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
@@ -220,21 +294,35 @@ export function Execucao() {
 
   useEffect(() => {
     setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
+    setWidthParc(motionParc.current!.scrollWidth - motionParc.current!.offsetWidth)
+    setWidthCanc(motionCanc.current!.scrollWidth - motionCanc.current!.offsetWidth)
+    setWidthExec(motionExec.current!.scrollWidth - motionExec.current!.offsetWidth)
     setWidthPreview(
       motionRefPreview.current!.scrollWidth -
         motionRefPreview.current!.offsetWidth,
     )
   }, [preview, ListNotas, ntParcial, estera, ntCancelada])
 
+  const deletNota = useCallback(async(id: string) => {
+    const cl = collection(fire, 'notas')
+    const rf = doc(cl, id)
+    deleteDoc(rf)
+  }, [])
+
   return (
     <Container>
       <Header
+        value={(h: string) => setSearch(h)}
         dateA={(h: string) => setDateA(h)}
         dateB={(h: string) => setDateB(h)}
       />
 
       <Modal ariaHideApp={false} isOpen={opemModalEsteira.modal}>
         <EditNotaExec closed={closedModalInfo} nota={opemModalEsteira.info} />
+      </Modal>
+
+      <Modal ariaHideApp={false} isOpen={opemModalTratativa.modal} >
+        <ModalTratativa closed={closedModalTratativa} nota={opemModalTratativa.info}  />
       </Modal>
 
       <File>
@@ -287,11 +375,8 @@ export function Execucao() {
             <div style={{ display: 'flex' }}>
               {preview.map((nt) => (
                 <Cards
-                  equipe={nt.EQUIPE || []}
                   key={nt.id}
-                  nota={nt.Nota}
-                  valor={nt.MO}
-                  data={nt.Dt_programação}
+                  nota={nt}
                 />
               ))}
             </div>
@@ -301,36 +386,152 @@ export function Execucao() {
 
       {/* ESTEIRA */}
       {select === 'esteira' && (
-        <ContainerCards>
-          <p>Minha esteira</p>
-          <Carousel whileTap={{ cursor: 'grabbing' }}>
-            <Inner
-              ref={motionRef}
-              drag="x"
-              dragConstraints={{ right: 0, left: -width }}
-            >
-              <div style={{ display: 'flex' }}>
-                {ListNotas.est.map((nt) => (
-                  <Cards
-                    equipe={nt.EQUIPE || []}
-                    deletar={() => {}}
-                    submit={() => upload(nt.id)}
-                    key={nt.id}
-                    nota={nt.Nota}
-                    valor={nt.MO}
-                    data={nt.Dt_programação}
-                    pres={() => {
-                      setOpemModalEsteira({ info: nt, modal: true })
-                    }}
-                  />
-                ))}
-              </div>
-            </Inner>
-          </Carousel>
-        </ContainerCards>
+        <div>
+          {/* PROCESSO */}
+          <ContainerCards>
+            {ListNotas.proc.length > 0 && (
+              <h3 style={{marginBottom: 5, marginTop: 15}} >Eteira de processo</h3>
+            )}
+            <Carousel whileTap={{ cursor: 'grabbing' }}>
+              <Inner
+                ref={motionRef}
+                drag="x"
+                dragConstraints={{ right: 0, left: -width }}
+              >
+                <div style={{ display: 'flex' }}>
+                  {ListNotas.proc.map((nt) => (
+                    <Cards
+                      deletar={() => navigate('/planejamento')}
+                      submit={() => upload(nt.id)}
+                      key={nt.id}
+                      nota={nt}
+                      pres={() => {
+                        setOpemModalEsteira({ info: nt, modal: true })
+                      }}
+                    />
+                  ))}
+                </div>
+              </Inner>
+            </Carousel>
+          </ContainerCards>
+
+            {/* EXECUCAO */}
+          <ContainerCards>
+          {ListNotas.exec.length > 0 && (
+            <h3 style={{marginBottom: 5, marginTop: 15}} >Esteira dos encarregados</h3>
+            )}
+
+            <Carousel whileTap={{ cursor: 'grabbing' }}>
+              <Inner
+                ref={motionProc}
+                drag="x"
+                dragConstraints={{ right: 0, left: -widthParc }}
+              >
+                <div style={{ display: 'flex' }}>
+                  {ListNotas.exec.map((nt) => (
+                    <Cards
+                      deletar={() => navigate('/planejamento')}
+                      submit={() => upload(nt.id)}
+                      key={nt.id}
+                      nota={nt}
+                      pres={() => {
+                        setOpemModalEsteira({ info: nt, modal: true })
+                      }}
+                    />
+                  ))}
+                </div>
+              </Inner>
+            </Carousel>
+          </ContainerCards>
+
+          {/* FINALIZADA */}
+          <ContainerCards>
+          {ListNotas.execE.length > 0 && (
+            <h3 style={{marginBottom: 5, marginTop: 15}} >Eteira de notas Finalizadas</h3>
+            )}
+            
+            <Carousel whileTap={{ cursor: 'grabbing' }}>
+              <Inner
+                ref={motionExec}
+                drag="x"
+                dragConstraints={{ right: 0, left: -widthExec }}
+              >
+                <div style={{ display: 'flex' }}>
+                  {ListNotas.execE.map((nt) => (
+                    <Cards
+                      deletar={() => navigate('/planejamento')}
+                      submit={() => upload(nt.id)}
+                      key={nt.id}
+                      nota={nt}
+                      pres={() => {
+                        setOpemModalEsteira({ info: nt, modal: true })
+                      }}
+                    />
+                  ))}
+                </div>
+              </Inner>
+            </Carousel>
+          </ContainerCards>
+
+          {/* PARCIAL */}
+          <ContainerCards>
+          {ListNotas.execP.length > 0 && (
+            <h3 style={{marginBottom: 5, marginTop: 15}} >Esteira de notas parciais</h3>
+            )}
+            <Carousel whileTap={{ cursor: 'grabbing' }}>
+              <Inner
+                ref={motionParc}
+                drag="x"
+                dragConstraints={{ right: 0, left: -widthParc }}
+              >
+                <div style={{ display: 'flex' }}>
+                  {ListNotas.execP.map((nt) => (
+                    <Cards
+                      deletar={() => deletNota(nt.id)}
+                      submit={() => handleAddParcial(nt)}
+                      key={nt.id}
+                      nota={nt}
+                      pres={() => {
+                        setOpemModalTratativa({ info: nt, modal: true })
+                      }}
+                    />
+                  ))}
+                </div>
+              </Inner>
+            </Carousel>
+          </ContainerCards>
+
+          {/* CANCELADA  */}
+          <ContainerCards>
+          {ListNotas.execP.length > 0 && (
+            <h3 style={{marginBottom: 5, marginTop: 15}} >Esteira de notas canceladas</h3>
+            )}
+            <Carousel whileTap={{ cursor: 'grabbing' }}>
+              <Inner
+                ref={motionCanc}
+                drag="x"
+                dragConstraints={{ right: 0, left: -widthCanc }}
+              >
+                <div style={{ display: 'flex' }}>
+                  {ListNotas.execC.map((nt) => (
+                    <Cards
+                      deletar={() => deletNota(nt.id)}
+                      submit={() => handleAddCancelada(nt)}
+                      key={nt.id}
+                      nota={nt}
+                      pres={() => {
+                        setOpemModalTratativa({ info: nt, modal: true })
+                      }}
+                    />
+                  ))}
+                </div>
+              </Inner>
+            </Carousel>
+          </ContainerCards>
+        </div>
       )}
 
-      {/* PARCIAL */}
+      {/* NOTA PARCIAL TRATADA */}
       {select === 'parcial' && (
         <ContainerCards>
           <p>Notas parciais</p>
@@ -343,13 +544,10 @@ export function Execucao() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.parc.map((nt) => (
                   <Cards
-                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
                     submit={() => {}}
                     key={nt.id}
-                    nota={nt.Nota}
-                    valor={nt.MO}
-                    data={nt.Dt_programação}
+                    nota={nt}
                     pres={() => {}}
                   />
                 ))}
@@ -372,13 +570,10 @@ export function Execucao() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.canc.map((nt) => (
                   <Cards
-                    equipe={nt.EQUIPE || []}
                     deletar={() => {}}
                     submit={() => {}}
                     key={nt.id}
-                    nota={nt.Nota}
-                    valor={nt.MO}
-                    data={nt.Dt_programação}
+                    nota={nt}
                     pres={() => {}}
                   />
                 ))}
@@ -394,12 +589,12 @@ export function Execucao() {
           marginTop: 30,
         }}
       >
-        <h3>Mapa geral das notas</h3>
+        <h3 style={{marginBottom: 5, marginTop: 15}} >Mapa geral das notas</h3>
       </div>
 
       {select === 'esteira' && (
         <div>
-          {ListNotas.est.map((h) => (
+          {ListNotas.esteira.map((h) => (
             <Map
               key={h.id}
               nota={h.Nota}
@@ -407,8 +602,8 @@ export function Execucao() {
               mo={h.MO}
               equipes={h.EQUIPE || []}
               cidade={h.cidade}
+              obs={h.obsExecuçao || ''}
               encarregado={h.SUPERVISOR || ''}
-              obs={h.OBSERVACAO || ''}
               tes={h.TLE}
             />
           ))}
@@ -426,7 +621,7 @@ export function Execucao() {
               cidade={h.cidade}
               encarregado={h.SUPERVISOR || ''}
               equipes={h.EQUIPE || []}
-              obs={h.OBSERVACAO || ''}
+              obs={h.obsExecuçao || ''}
               tes={h.TLE}
             />
           ))}
@@ -444,7 +639,8 @@ export function Execucao() {
               cidade={h.cidade}
               equipes={h.EQUIPE || []}
               encarregado={h.SUPERVISOR || ''}
-              obs={h.OBSERVACAO || ''}
+              obs={h.obsExecuçao || ''}
+
               tes={h.TLE}
             />
           ))}

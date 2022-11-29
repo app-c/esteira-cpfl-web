@@ -6,8 +6,8 @@ import { Login } from '../pages/login'
 export function Router() {
   return (
     <Routes>
+      <Route path="/" element={<Execucao />} />
       <Route path="/planejamento" element={<Home />} />
-      <Route path="/execucao" element={<Execucao />} />
       <Route path="/loging" element={<Login />} />
     </Routes>
   )

@@ -1,21 +1,27 @@
 import { format } from 'date-fns'
-import { useCallback, useEffect, useState } from 'react'
-import { Container, ContainerDate, DateInput, Search, Text } from './styles'
+import { useEffect, useState } from 'react'
+import { Container, ContainerDate, DateInput, Search } from './styles'
 
 interface Props {
   dateA: (item: string) => void
   dateB: (item: string) => void
+  value: (item: string) => void
 }
 
-export function Header({ dateA, dateB }: Props) {
+export function Header({ dateA, dateB, value }: Props) {
   const datePresent = new Date()
   const [dtA, setDateA] = useState(format(datePresent, 'yyyy-MM-dd'))
   const [dtB, setDateB] = useState(format(datePresent, 'yyyy-MM-dd'))
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     dateA(dtA)
     dateB(dtB)
   }, [dateA, dateB, dtA, dtB])
+
+  useEffect(() => {
+    value(search)
+  }, [value, search])
 
   return (
     <Container>
@@ -35,7 +41,10 @@ export function Header({ dateA, dateB }: Props) {
           type="date"
         />
       </ContainerDate>
-      <Search placeholder="pesquisar nota" />
+      <Search
+        onChange={(h) => setSearch(h.currentTarget.value)}
+        placeholder="pesquisar nota"
+      />
     </Container>
   )
 }

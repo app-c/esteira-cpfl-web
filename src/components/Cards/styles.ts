@@ -19,7 +19,7 @@ export const Container = styled.div`
 export const BoxEquipe = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 2rem 2rem;
+  grid-template-rows: 1.5rem 1.5rem;
   background-color: ${theme.color.white[100]};
   border-radius: 5px;
   padding: 10px;
@@ -38,10 +38,12 @@ export const Header = styled.div`
 
 export const TextNota = styled.h3`
   color: #242121;
+  font-size: 16px;
 `
 
 export const Text = styled.p`
   color: #0a0909;
+  font-size: 14px;
 `
 
 export const ContainerButton = styled.div`

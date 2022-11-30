@@ -74,10 +74,11 @@ export function EditNotaExec({ nota, closed }: Props) {
   )
 
   const handleSubimit = useCallback(
-    (data: object) => {
+    (data: IProsEster) => {
       const dados = {
         ...data,
         ...nota,
+        TLE: data.TLE,
         EQUIPE: select,
         SUPERVISOR: officer,
         obsExecuçao: '',
@@ -85,17 +86,19 @@ export function EditNotaExec({ nota, closed }: Props) {
         updateAt: format(new Date(), 'dd/MM/yyyy'),
       }
 
-      console.log('submit')
+      console.log(data)
 
       setNotaUpdade(dados)
     },
-    [nota, select, officer, obsFocal],
+    [nota, select, officer],
   )
 
   const handleUpdade = useCallback(() => {
     const cole = collection(fire, 'notas')
     const ref = doc(cole, nota.id)
     const up = notaUpdate || {}
+
+    console.log(notaUpdate)
 
     updateDoc(ref, up).then(() => {
       alert('nota atualizada')
@@ -114,10 +117,10 @@ export function EditNotaExec({ nota, closed }: Props) {
     <Form
       onSubmit={handleSubimit}
       initialData={{
-        nota: nota.Nota,
-        mo,
-        dt_programacao: nota.Dt_programação,
-        documento: nota.TLE,
+        Nota: nota.Nota,
+        MO: mo,
+        Dt_programacao: nota.Dt_programação,
+        TLE: nota.TLE,
         cidade: nota.cidade,
       }}
     >
@@ -165,22 +168,22 @@ export function EditNotaExec({ nota, closed }: Props) {
               <ContentElement>
                 <Input
                   style={{ marginBottom: 5 }}
-                  name="nota"
+                  name="Nota"
                   placeholder={'número da nota'}
                 />
                 <Input
                   style={{ marginBottom: 5 }}
-                  name="mo"
+                  name="MO"
                   placeholder={'número da nota'}
                 />
                 <Input
-                  name="dt_programacao"
+                  name="Dt_programacao"
                   style={{ marginBottom: 5 }}
                   placeholder={'número da nota'}
                 />
 
                 <Input
-                  name="documento"
+                  name="TLE"
                   style={{ marginBottom: 5 }}
                   placeholder={'documento'}
                 />

@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { IProsEster } from '../../dtos'
+import { theme } from '../../theme/theme'
 import { Botao } from '../Button'
 import {
   BoxEquipe,
@@ -15,7 +16,7 @@ interface Props {
   pres?: () => void
   deletar?: () => void
   submit?: () => void
-  buton: boolean
+  buton?: boolean
 }
 
 export function Cards({
@@ -49,7 +50,7 @@ export function Cards({
           <Text>equipes: </Text>
           <BoxEquipe>
             {equipe.map((h) => (
-              <p key={h.id}>{h.equipe}</p>
+              <p style={{color: theme.color.dark[10]}} key={h.id}>{h.equipe}</p>
             ))}
           </BoxEquipe>
           <ContainerButton>

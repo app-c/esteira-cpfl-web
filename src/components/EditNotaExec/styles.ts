@@ -50,6 +50,7 @@ export const ContainerEquipe = styled.div`
     p {
       margin-top: 5px;
       font-size: 0.8rem;
+      color: ${theme.color.dark[10]};
     }
   }
 `

@@ -283,7 +283,7 @@ export function Execucao() {
       data.append('csv', fl)
 
       await api
-        .post('/', data)
+        .post('/post/csv', data)
         .then((h) => {
           setPreview(h.data)
         })
@@ -401,7 +401,7 @@ export function Execucao() {
                 <div style={{ display: 'flex' }}>
                   {ListNotas.proc.map((nt) => (
                     <Cards
-                      deletar={() => navigate('/planejamento')}
+                      deletar={() => deletNota(nt.id)}
                       submit={() => upload(nt.id)}
                       key={nt.id}
                       nota={nt}

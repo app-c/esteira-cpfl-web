@@ -6,9 +6,13 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   h2 {
     align-self: center;
   }
+
+  background-color: ${theme.color.dark[50]};
+  padding: 2rem;
 `
 
 export const BoxTratativa = styled.div`
@@ -31,6 +35,7 @@ export const BoxTratativa = styled.div`
 
       button {
         background-color: ${theme.color.blue[50]};
+        border-radius: 4px;
         border: none;
         padding: 5px;
       }

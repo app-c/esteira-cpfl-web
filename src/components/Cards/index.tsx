@@ -1,15 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { IProsEster } from '../../dtos'
-import { theme } from '../../theme/theme'
-import { Botao } from '../Button'
-import {
-  BoxEquipe,
-  Container,
-  ContainerButton,
-  Header,
-  Text,
-  TextNota
-} from './styles'
+import { BoxEquipe, Circle, Container, Content, Header } from './styles'
 
 interface Props {
   nota: IProsEster
@@ -34,39 +25,30 @@ export function Cards({
   })
   const equipe = nota.EQUIPE || []
   return (
-    <Container>
-      <Header>
-        <TextNota>{nota.Nota}</TextNota>
-      </Header>
+    <Container  border={nota.situation} >
 
-      <Text>data: {nota.Dt_programação}</Text>
-      <Text>MO: {mo}</Text>
-      <Text>Documento: {nota.TLE}</Text>
+      <Content>
+        <Header>
+          <p>{nota.Nota}</p>
+        </Header>
 
-
-      {nota.situation !== 'preview' && (
         <div>
-          <Text>encarregado: {nota.SUPERVISOR} </Text>
-          <Text>equipes: </Text>
-          <BoxEquipe>
-            {equipe.map((h) => (
-              <p style={{color: theme.color.dark[10]}} key={h.id}>{h.equipe}</p>
-            ))}
-          </BoxEquipe>
-          <ContainerButton>
-            <Botao pres={submit} title="Enviar" variant="success" />
-
-            {nota.situation === 'estera'  && (
-              <Botao pres={pres} title="Editar" variant="secundary" />
-            )}
-
-            {nota.situation === 'parcial'  && (
-              <Botao pres={pres} title="Editar" variant="secundary" />
-            )}
-            <Botao pres={deletar} title="Deletar" variant="danger" />
-          </ContainerButton>
+          <h5>data: {nota.Dt_programação}</h5>
+          <h5>Encarregado: {nota.Dt_programação}</h5>
+          <h5>data: {nota.Dt_programação}</h5>
         </div>
-      )}
+
+        <BoxEquipe>
+          <div>
+            {equipe.map(h => (
+              <p>{h.equipe}</p>
+            ))}
+          </div>
+        </BoxEquipe>
+      </Content>
+
+      <Circle />
+     
     </Container>
   )
 }

@@ -1,19 +1,59 @@
 import styled from 'styled-components'
 import { theme } from '../../theme/theme'
 
-export const Container = styled.div`
-  width: 300px;
-  background: #ffffff;
+type BorderProps = 'executada' | 'parcial' | 'cancelada' | 'default'
+interface PropsContainer {
+  border: BorderProps
+  bg: BorderProps
+}
+
+const borderVariant = {
+  executada: theme.color.green[10],
+  parcial: theme.color.orange[10],
+  cancelada: theme.color.red[10],
+  default: 'transparent',
+}
+
+const bgVariant = {
+  executada: theme.color.green[50],
+  parcial: theme.color.orange[50],
+  cancelada: theme.color.red[50],
+  default: 'transparent',
+}
+
+export const Circle = styled.div`
+  display: flex;
+  width: 400px;
+  height: 400px;
+  border-radius: 200px;
+  background-color: #903a3a;
+  position: relative;
+
+  margin-top: 2rem;
+  left: 8rem;
+`
+
+export const Container = styled.div<PropsContainer>`
+  overflow: hidden;
+  width: 250px;
+  height: 150px;
+  background: rgba(145, 145, 145, 0.392);
   border-radius: 10px;
   padding: 5px;
   margin-left: 5px;
-  border: solid 1px #252020;
+  z-index: 1;
+
+  border: solid 4px ${({ border: h }) => borderVariant[h]};
 
   transition: 0.5s;
 
   &:hover {
     width: 310px;
   }
+`
+
+export const Content = styled.div`
+  display: grid;
 `
 
 export const BoxEquipe = styled.div`

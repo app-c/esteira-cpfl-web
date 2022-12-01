@@ -50,7 +50,7 @@ export function EditNota({ nota, closed }: Props) {
 
   const eqp = nota.EQUIPE || []
   const [select, setSelect] = useState<IPropsEquipe[]>(eqp)
-  const [selectAlert, setSelectAlert] = useState<IAlert[]>(Alert)
+  const [selectAlert, setSelectAlert] = useState<IAlert[]>(nota.alertas)
   const [obsPlanejamento, setObsPlanejamento] = useState(nota.obsPlanejamento)
 
   const toggleSecection = useCallback(
@@ -91,6 +91,7 @@ export function EditNota({ nota, closed }: Props) {
         EQUIPE: select,
         ntSituation,
         obsPlanejamento,
+        alertas: selectAlert,
         obsExecuçao: nota.obsExecuçao || '',
         obsTratativa: nota.obsTratativa || '',
         updateAt: format(new Date(), 'dd/MM/yyyy'),
@@ -100,7 +101,7 @@ export function EditNota({ nota, closed }: Props) {
 
       setNotaUpdade(dados)
     },
-    [nota, select, ntSituation, obsPlanejamento],
+    [nota, select, ntSituation, obsPlanejamento, selectAlert],
   )
 
   const handleUpdade = useCallback(() => {

@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { IProsEster } from '../../dtos'
-import { BoxEquipe, Circle, Container, Content, Header } from './styles'
+import { Botao } from '../Button'
+import { BoxEquipe, Container, ContainerButton, Content, Header } from './styles'
 
 interface Props {
   nota: IProsEster
@@ -32,22 +33,27 @@ export function Cards({
           <p>{nota.Nota}</p>
         </Header>
 
-        <div>
-          <h5>data: {nota.Dt_programação}</h5>
-          <h5>Encarregado: {nota.Dt_programação}</h5>
-          <h5>data: {nota.Dt_programação}</h5>
+        <div className='texto' >
+          <p>{nota.Dt_programação}</p>
+          <p>Encarregado: {nota.SUPERVISOR}</p>
+          <p>Documento: {nota.TLE}</p>
         </div>
 
         <BoxEquipe>
-          <div>
             {equipe.map(h => (
-              <p>{h.equipe}</p>
+              <div key={h.id} >
+                <p  >{h.equipe}</p>
+              </div>
             ))}
-          </div>
         </BoxEquipe>
+
+        <ContainerButton>
+          <Botao title='Enviar' />
+          <Botao title='Editar' variant='secundary' />
+          <Botao title='deletar' variant='danger' />
+        </ContainerButton>
       </Content>
 
-      <Circle />
      
     </Container>
   )

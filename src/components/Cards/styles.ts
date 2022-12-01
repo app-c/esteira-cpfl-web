@@ -26,43 +26,59 @@ export const Circle = styled.div`
   width: 400px;
   height: 400px;
   border-radius: 200px;
-  background-color: #903a3a;
-  position: relative;
+  background-color: #c6c6c6;
+  position: absolute;
+  z-index: 1;
 
-  margin-top: 2rem;
-  left: 8rem;
+  top: -15rem;
+  right: 0rem;
 `
 
 export const Container = styled.div<PropsContainer>`
-  overflow: hidden;
   width: 250px;
-  height: 150px;
+  min-height: 150px;
   background: rgba(145, 145, 145, 0.392);
   border-radius: 10px;
   padding: 5px;
-  margin-left: 5px;
-  z-index: 1;
+  margin-left: 10px;
+  position: relative;
 
-  border: solid 4px ${({ border: h }) => borderVariant[h]};
+  border: solid 3px ${({ border: h }) => borderVariant[h]};
 
   transition: 0.5s;
 
   &:hover {
-    width: 310px;
+    width: 280px;
   }
 `
 
 export const Content = styled.div`
+  position: relative;
   display: grid;
+  z-index: 2;
+
+  .texto {
+    margin: 10px 0;
+    padding: 0 10px;
+    p {
+      font-size: 0.9rem;
+    }
+  }
 `
 
 export const BoxEquipe = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1.5rem 1.5rem;
-  background-color: ${theme.color.white[100]};
+  grid-template-rows: 1rem 1rem;
+  background-color: #9af2ffba;
   border-radius: 5px;
-  padding: 10px;
+  padding: 5px;
+
+  color: ${theme.color.dark[10]};
+  font-size: 12px;
+  div {
+    margin-left: 5px;
+  }
 `
 
 export const Header = styled.div`
@@ -71,6 +87,7 @@ export const Header = styled.div`
   display: flex;
   width: 100%;
   border-width: 5px;
+  border-radius: 4px;
 
   align-items: center;
   justify-content: center;

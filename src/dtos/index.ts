@@ -51,6 +51,7 @@ export interface IProsEster {
     | 'nt_cancelada'
     | 'preview'
   PORCENTUAL?: number
+  OBSERVACAO: string
   // Dt_parcial?: string
   // Dt_cancelada?: string
   obsPlanejamento?: string

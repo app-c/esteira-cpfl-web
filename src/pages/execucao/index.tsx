@@ -36,7 +36,8 @@ import {
   ContainerCards,
   ContainerFile,
   File,
-  Inner
+  Inner,
+  Shortcut
 } from './styles'
 interface ProsModal {
   info: IProsEster
@@ -47,6 +48,7 @@ export function Execucao() {
   const navigate = useNavigate()
 
   const motionRef = useRef<any>()
+  const motionEst = useRef<any>()
   const motionProc = useRef<any>()
   const motionExec = useRef<any>()
   const motionParc = useRef<any>()
@@ -55,6 +57,8 @@ export function Execucao() {
 
   const [width, setWidth] = useState(0)
   const [widthPreview, setWidthPreview] = useState(0)
+  const [widthEst, setWidthEst] = useState(0)
+  const [widthProc, setWidthProc] = useState(0)
   const [widthExec, setWidthExec] = useState(0)
   const [widthParc, setWidthParc] = useState(0)
   const [widthCanc, setWidthCanc] = useState(0)
@@ -64,7 +68,9 @@ export function Execucao() {
   const [ntParcial, setNtParcial] = useState<IProsEster[]>([])
   const [ntCancelada, setNtCancelada] = useState<IProsEster[]>([])
   const [file, setFile] = useState<any>(null)
-  const [select, setSelect] = useState('esteira')
+  const [select, setSelect] = useState('parcial')
+
+  const [shortcut, setShortcut] = useState('')
 
   const [opemModalEsteira, setOpemModalEsteira] = useState<ProsModal>({
     info: {} as IProsEster,
@@ -293,20 +299,40 @@ export function Execucao() {
   }, [])
 
   useEffect(() => {
-    setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
-    setWidthParc(motionParc.current!.scrollWidth - motionParc.current!.offsetWidth)
-    setWidthCanc(motionCanc.current!.scrollWidth - motionCanc.current!.offsetWidth)
-    setWidthExec(motionExec.current!.scrollWidth - motionExec.current!.offsetWidth)
-    setWidthPreview(
-      motionRefPreview.current!.scrollWidth -
-        motionRefPreview.current!.offsetWidth,
-    )
+
+    if(select === 'parcial') {
+      setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
+
+    } else {
+      setWidthEst(motionEst.current!.scrollWidth - motionEst.current!.offsetWidth)
+      setWidthProc(motionProc.current!.scrollWidth - motionProc.current!.offsetWidth)
+      setWidthParc(motionParc.current!.scrollWidth - motionParc.current!.offsetWidth)
+      setWidthCanc(motionCanc.current!.scrollWidth - motionCanc.current!.offsetWidth)
+      setWidthExec(motionExec.current!.scrollWidth - motionExec.current!.offsetWidth)
+      setWidthPreview(
+        motionRefPreview.current!.scrollWidth -
+          motionRefPreview.current!.offsetWidth,
+      )
+
+    }
+
+    
   }, [preview, ListNotas, ntParcial, estera, ntCancelada])
+
 
   const deletNota = useCallback(async(id: string) => {
     const cl = collection(fire, 'notas')
     const rf = doc(cl, id)
     deleteDoc(rf)
+  }, [])
+
+  const resgatar = useCallback((id: string) => {
+    const cole = collection(fire, 'notas')
+    const rf = doc(cole, id)
+
+    updateDoc(rf, {
+      situation: 'estera'
+    })
   }, [])
 
   return (
@@ -350,18 +376,15 @@ export function Execucao() {
         </ContainerButton>
       </File>
 
-      <div
-        style={{
-          padding: 10,
-          display: 'flex',
-          marginTop: 10,
-          marginBottom: 10,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <label></label>
-      </div>
+      <Shortcut>
+        <Botao pres={() => setShortcut('baseCroncroll')} title='Controle base' />
+        <Botao pres title='Mapa geral' />
+        <Botao title='Notas finalizadas' />
+        <Botao title='Notas parciais' />
+        <Botao title='Notas canceladas' />
+
+        <input type="text" placeholder='digite a cidade desejada' />
+      </Shortcut>
 
       {/* PREVIEW */}
       <ContainerCards style={{ marginBottom: 20 }}>
@@ -387,147 +410,167 @@ export function Execucao() {
       {/* ESTEIRA */}
       {select === 'esteira' && (
         <div>
-          {/* PROCESSO */}
-          <ContainerCards>
-            {ListNotas.proc.length > 0 && (
-              <h3 style={{marginBottom: 5, marginTop: 15}} >Eteira de processo</h3>
-            )}
-            <Carousel whileTap={{ cursor: 'grabbing' }}>
-              <Inner
-                ref={motionRef}
-                drag="x"
-                dragConstraints={{ right: 0, left: -width }}
-              >
-                <div style={{ display: 'flex' }}>
-                  {ListNotas.proc.map((nt) => (
-                    <Cards
-                      deletar={() => deletNota(nt.id)}
-                      submit={() => upload(nt.id)}
-                      key={nt.id}
-                      nota={nt}
-                      pres={() => {
-                        setOpemModalEsteira({ info: nt, modal: true })
-                      }}
-                    />
-                  ))}
-                </div>
-              </Inner>
-            </Carousel>
-          </ContainerCards>
+          {shortcut === 'baseCroncroll' && (
+            <div>
 
-            {/* EXECUCAO */}
-          <ContainerCards>
-          {ListNotas.exec.length > 0 && (
-            <h3 style={{marginBottom: 5, marginTop: 15}} >Esteira dos encarregados</h3>
-            )}
+              {/* PROCESSO */}
+              <ContainerCards>
+                {ListNotas.proc.length > 0 && (
+                  <h3 style={{marginBottom: 5, marginTop: 15}} >Notas na base</h3>
+                )}
+                <Carousel whileTap={{ cursor: 'grabbing' }}>
+                  <Inner
+                    ref={motionEst}
+                    drag="x"
+                    dragConstraints={{ right: 0, left: -widthEst }}
+                  >
+                    <div style={{ display: 'flex' }}>
+                      {ListNotas.proc.map((nt) => (
+                        <Cards
+                          deletar={() => deletNota(nt.id)}
+                          submit={() => upload(nt.id)}
+                          key={nt.id}
+                          nota={nt}
+                          pres={() => {
+                            setOpemModalEsteira({ info: nt, modal: true })
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </Inner>
+                </Carousel>
+              </ContainerCards>
 
-            <Carousel whileTap={{ cursor: 'grabbing' }}>
-              <Inner
-                ref={motionProc}
-                drag="x"
-                dragConstraints={{ right: 0, left: -widthParc }}
-              >
-                <div style={{ display: 'flex' }}>
-                  {ListNotas.exec.map((nt) => (
-                    <Cards
-                      deletar={() => navigate('/planejamento')}
-                      submit={() => upload(nt.id)}
-                      key={nt.id}
-                      nota={nt}
-                      pres={() => {
-                        setOpemModalEsteira({ info: nt, modal: true })
-                      }}
-                    />
-                  ))}
-                </div>
-              </Inner>
-            </Carousel>
-          </ContainerCards>
+                {/* EXECUCAO */}
+              <ContainerCards>
+              {ListNotas.exec.length > 0 && (
+                <h3 style={{marginBottom: 5, marginTop: 15}} >Notas com os encarregados</h3>
+                )}
 
-          {/* FINALIZADA */}
-          <ContainerCards>
-          {ListNotas.execE.length > 0 && (
-            <h3 style={{marginBottom: 5, marginTop: 15}} >Eteira de notas Finalizadas</h3>
-            )}
-            
-            <Carousel whileTap={{ cursor: 'grabbing' }}>
-              <Inner
-                ref={motionExec}
-                drag="x"
-                dragConstraints={{ right: 0, left: -widthExec }}
-              >
-                <div style={{ display: 'flex' }}>
-                  {ListNotas.execE.map((nt) => (
-                    <Cards
-                      deletar={() => navigate('/planejamento')}
-                      submit={() => upload(nt.id)}
-                      key={nt.id}
-                      nota={nt}
-                      pres={() => {
-                        setOpemModalEsteira({ info: nt, modal: true })
-                      }}
-                    />
-                  ))}
-                </div>
-              </Inner>
-            </Carousel>
-          </ContainerCards>
+                <Carousel whileTap={{ cursor: 'grabbing' }}>
+                  <Inner
+                    ref={motionProc}
+                    drag="x"
+                    dragConstraints={{ right: 0, left: -widthProc }}
+                  >
+                    <div style={{ display: 'flex' }}>
+                      {ListNotas.exec.map((nt) => (
+                        <Cards
+                          title1='resgatar'
+                          title2='info'
+                          title3='deletar'
+                          deletar={() => navigate('/planejamento')}
+                          submit={() => resgatar(nt.id)}
+                          key={nt.id}
+                          nota={nt}
+                          pres={() => {
+                            setOpemModalEsteira({ info: nt, modal: true })
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </Inner>
+                </Carousel>
+              </ContainerCards>
+            </div>
+
+          )}
+
+          {/* {shortcut === 'map' && ()} */}
+
+          {shortcut === 'finish' && (
+            <ContainerCards>
+              {ListNotas.execE.length > 0 && (
+                <h3 style={{marginBottom: 5, marginTop: 15}} >Notas Finalizadas</h3>
+                )}
+              
+              <Carousel whileTap={{ cursor: 'grabbing' }}>
+                <Inner
+                  ref={motionExec}
+                  drag="x"
+                  dragConstraints={{ right: 0, left: -widthExec }}
+                >
+                  <div style={{ display: 'flex' }}>
+                    {ListNotas.execE.map((nt) => (
+                      <Cards
+                        deletar={() => navigate('/planejamento')}
+                        submit={() => upload(nt.id)}
+                        key={nt.id}
+                        nota={nt}
+                        pres={() => {
+                          setOpemModalEsteira({ info: nt, modal: true })
+                        }}
+                      />
+                    ))}
+                  </div>
+                </Inner>
+              </Carousel>
+            </ContainerCards>
+          )}
+          {shortcut === 'partial' && (
+              <ContainerCards>
+                {ListNotas.execP.length > 0 && (
+                  <h3 style={{marginBottom: 5, marginTop: 15}} >Notas parciais</h3>
+                  )}
+                <Carousel whileTap={{ cursor: 'grabbing' }}>
+                  <Inner
+                    ref={motionParc}
+                    drag="x"
+                    dragConstraints={{ right: 0, left: -widthParc }}
+                  >
+                    <div style={{ display: 'flex' }}>
+                      {ListNotas.execP.map((nt) => (
+                        <Cards
+                          deletar={() => deletNota(nt.id)}
+                          submit={() => handleAddParcial(nt)}
+                          key={nt.id}
+                          nota={nt}
+                          pres={() => {
+                            setOpemModalTratativa({ info: nt, modal: true })
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </Inner>
+                </Carousel>
+              </ContainerCards>
+          )}
+          {shortcut === 'cancel' && (
+                 <ContainerCards>
+                 {ListNotas.execP.length > 0 && (
+                   <h3 style={{marginBottom: 5, marginTop: 15}} >Notas canceladas</h3>
+                   )}
+                   <Carousel whileTap={{ cursor: 'grabbing' }}>
+                     <Inner
+                       ref={motionCanc}
+                       drag="x"
+                       dragConstraints={{ right: 0, left: -widthCanc }}
+                     >
+                       <div style={{ display: 'flex' }}>
+                         {ListNotas.execC.map((nt) => (
+                           <Cards
+                             deletar={() => deletNota(nt.id)}
+                             submit={() => handleAddCancelada(nt)}
+                             key={nt.id}
+                             nota={nt}
+                             pres={() => {
+                               setOpemModalTratativa({ info: nt, modal: true })
+                             }}
+                           />
+                         ))}
+                       </div>
+                     </Inner>
+                   </Carousel>
+                 </ContainerCards>
+          )}
+
+  
 
           {/* PARCIAL */}
-          <ContainerCards>
-          {ListNotas.execP.length > 0 && (
-            <h3 style={{marginBottom: 5, marginTop: 15}} >Esteira de notas parciais</h3>
-            )}
-            <Carousel whileTap={{ cursor: 'grabbing' }}>
-              <Inner
-                ref={motionParc}
-                drag="x"
-                dragConstraints={{ right: 0, left: -widthParc }}
-              >
-                <div style={{ display: 'flex' }}>
-                  {ListNotas.execP.map((nt) => (
-                    <Cards
-                      deletar={() => deletNota(nt.id)}
-                      submit={() => handleAddParcial(nt)}
-                      key={nt.id}
-                      nota={nt}
-                      pres={() => {
-                        setOpemModalTratativa({ info: nt, modal: true })
-                      }}
-                    />
-                  ))}
-                </div>
-              </Inner>
-            </Carousel>
-          </ContainerCards>
+        
 
           {/* CANCELADA  */}
-          <ContainerCards>
-          {ListNotas.execP.length > 0 && (
-            <h3 style={{marginBottom: 5, marginTop: 15}} >Esteira de notas canceladas</h3>
-            )}
-            <Carousel whileTap={{ cursor: 'grabbing' }}>
-              <Inner
-                ref={motionCanc}
-                drag="x"
-                dragConstraints={{ right: 0, left: -widthCanc }}
-              >
-                <div style={{ display: 'flex' }}>
-                  {ListNotas.execC.map((nt) => (
-                    <Cards
-                      deletar={() => deletNota(nt.id)}
-                      submit={() => handleAddCancelada(nt)}
-                      key={nt.id}
-                      nota={nt}
-                      pres={() => {
-                        setOpemModalTratativa({ info: nt, modal: true })
-                      }}
-                    />
-                  ))}
-                </div>
-              </Inner>
-            </Carousel>
-          </ContainerCards>
+     
         </div>
       )}
 

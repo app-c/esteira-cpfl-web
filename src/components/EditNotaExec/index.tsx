@@ -203,14 +203,20 @@ export function EditNotaExec({ nota, closed }: Props) {
             </div>
 
             <div className="obsPlanejamento">
-              <p>Observações do planejamento:</p>
+              <p>
+                Observações do planejamento: {'\n'}
+                {nota.obsPlanejamento}
+              </p>
               <div>
                 <p>{nota.obsPlanejamento}</p>
               </div>
             </div>
 
             <div className="obsExecucao">
-              <p>Observações da execução:</p>
+              <p>
+                Observações da execução: {'\n'}
+                {nota.obsExecuçao}
+              </p>
             </div>
           </Content>
 

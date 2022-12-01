@@ -11,6 +11,7 @@ export const ContainerCards = styled(motion.div)`
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-bottom: 10px;
 `
 
 export const Carousel = styled(motion.div)`
@@ -37,4 +38,23 @@ export const ContainerButton = styled.div`
   display: flex;
   justify-content: space-between;
   width: 600px;
+`
+
+export const Shortcut = styled.div`
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 10rem 10rem 10rem 10rem 10rem 14rem;
+  grid-template-rows: 5rem;
+  flex-direction: row;
+  grid-gap: 5rem;
+
+  background-color: #74c9a8;
+
+  /* align-items: center; */
+
+  input {
+    height: 40px;
+    align-self: center;
+    padding: 0 10px;
+  }
 `

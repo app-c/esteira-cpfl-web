@@ -9,6 +9,9 @@ interface Props {
   deletar?: () => void
   submit?: () => void
   buton?: boolean
+  title1?: string
+  title2?: string
+  title3?: string
 }
 
 export function Cards({
@@ -16,7 +19,8 @@ export function Cards({
   pres,
   deletar,
   submit,
-  buton
+  buton,
+  title1 = 'enviar', title2 = 'editar', title3 = 'deletar'
 }: Props) {
   const numero = String(nota.MO)
   const val = numero.replace(/([0-9]{0})$/g, '.$100')
@@ -48,9 +52,9 @@ export function Cards({
         </BoxEquipe>
 
         <ContainerButton>
-          <Botao pres={submit} title='Enviar' />
-          <Botao pres={pres} title='Editar' variant='secundary' />
-          <Botao pres={deletar} title='deletar' variant='danger' />
+          <Botao pres={submit} title={title1} />
+          <Botao pres={pres} title={title2} variant='secundary' />
+          <Botao pres={deletar} title={title3} variant='danger' />
         </ContainerButton>
       </Content>
 

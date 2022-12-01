@@ -40,6 +40,16 @@ export const BoxTratativa = styled.div`
         padding: 5px;
       }
     }
+
+    .pos {
+      margin-top: 20px;
+      width: 20rem;
+
+      h5 {
+        font-size: 16px;
+        color: ${theme.color.orange[10]};
+      }
+    }
   }
 
   .botao {

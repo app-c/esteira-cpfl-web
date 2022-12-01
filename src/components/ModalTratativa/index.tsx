@@ -41,8 +41,13 @@ export function ModalTratativa({ nota, closed }: Props) {
               name="planejamento"
               id="1"
               cols={40}
-              rows={13}
+              rows={5}
             ></textarea>
+
+            <div className="pos">
+              <h5>Observações pós obra</h5>
+              {nota.OBSERVACAO}
+            </div>
           </div>
 
           <div className="medida">

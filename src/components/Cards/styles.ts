@@ -35,13 +35,12 @@ export const Circle = styled.div`
 `
 
 export const Container = styled.div<PropsContainer>`
-  width: 250px;
+  width: 270px;
   min-height: 150px;
   background: rgba(145, 145, 145, 0.392);
   border-radius: 10px;
   padding: 5px;
   margin-left: 10px;
-  position: relative;
 
   border: solid 3px ${({ border: h }) => borderVariant[h]};
 
@@ -53,7 +52,6 @@ export const Container = styled.div<PropsContainer>`
 `
 
 export const Content = styled.div`
-  position: relative;
   display: grid;
   z-index: 2;
 
@@ -91,6 +89,8 @@ export const Header = styled.div`
 
   align-items: center;
   justify-content: center;
+
+  font-weight: 400;
 `
 
 export const TextNota = styled.h3`

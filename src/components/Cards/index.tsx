@@ -48,9 +48,9 @@ export function Cards({
         </BoxEquipe>
 
         <ContainerButton>
-          <Botao title='Enviar' />
-          <Botao title='Editar' variant='secundary' />
-          <Botao title='deletar' variant='danger' />
+          <Botao pres={submit} title='Enviar' />
+          <Botao pres={pres} title='Editar' variant='secundary' />
+          <Botao pres={deletar} title='deletar' variant='danger' />
         </ContainerButton>
       </Content>
 

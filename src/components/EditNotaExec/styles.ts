@@ -13,7 +13,7 @@ export const Container = styled.div`
 
   width: 100%;
 
-  background: #d3d3d3;
+  background: ${theme.color.dark[50]};
 `
 
 export const ContentGrid = styled.div`
@@ -107,8 +107,8 @@ export const ContentTitle = styled.div`
   p {
     margin-top: 5px;
     margin-bottom: 5px;
-    color: #00032e;
-    font-weight: bold;
+    color: ${theme.color.white[50]};
+    font-weight: 400;
     font-size: 14px;
   }
 `

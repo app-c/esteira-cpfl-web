@@ -2,7 +2,7 @@
 /* eslint-disable array-callback-return */
 import { Form } from '@unform/web'
 import { format } from 'date-fns'
-import { collection, doc, setDoc } from 'firebase/firestore'
+import { collection, doc, updateDoc } from 'firebase/firestore'
 import { useCallback, useContext, useState } from 'react'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
@@ -39,10 +39,9 @@ const Officer = [
 ]
 
 export function EditNotaExec({ nota, closed }: Props) {
-  const { gds } = useContext(NotasContext)
-
+  const { GDS } = useContext(NotasContext)
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
-    gds.filter((h) => {
+    GDS.filter((h) => {
       if (
         h.equipe !== 'MONTADOR' &&
         h.equipe !== 'VIABILIDADE' &&
@@ -51,13 +50,11 @@ export function EditNotaExec({ nota, closed }: Props) {
         return h
       }
     }),
-    // .map((h) => {
-    //   return {
-    //     ...h,
-    //     data: nota.Dt_programação,
-    //   }
-    // }),
   )
+
+  const [obsFocal, setObsFocal] = useState(nota.obsTratativa)
+
+  const [notaUpdate, setNotaUpdade] = useState<IProsEster>()
 
   const eqp = nota.EQUIPE || []
   const [select, setSelect] = useState<IPropsEquipe[]>(eqp)
@@ -97,24 +94,16 @@ export function EditNotaExec({ nota, closed }: Props) {
       const cole = collection(fire, 'notas')
       const ref = doc(cole, nota.id)
 
-      select.forEach((eq) => {
-        const cole = collection(fire, 'gds')
-        const rf = doc(cole, eq.id)
-        const dados = {
-          ...eq,
-          data: '00/00/0000',
-        }
-        setDoc(rf, dados)
-      })
+      console.log(notaUpdate)
 
-      // updateDoc(ref, dados).then(() => {
-      //   alert('nota atualizada')
-      //   closed()
-      // })
+      updateDoc(ref, dados).then(() => {
+        alert('nota atualizada')
+        closed()
+      })
 
       console.log(dados)
     },
-    [nota, select, officer, closed],
+    [nota, select, officer, notaUpdate, closed],
   )
 
   const numero = String(nota.MO)
@@ -220,9 +209,8 @@ export function EditNotaExec({ nota, closed }: Props) {
                 type="submit"
                 onClick={closed}
               >
-                Cancelar
+                voltar
               </Button>
-              <Button type="submit">Salvar</Button>
             </ContainerButton>
           </Form>
         </Content>
@@ -230,7 +218,6 @@ export function EditNotaExec({ nota, closed }: Props) {
         <ContainerEquipe className="equipe">
           {bancoEquipe.map((h) => (
             <BoxEquipe
-              us={h.faturamento}
               eqp={h.equipe}
               pres={() => toggleSecection(h)}
               select={select.findIndex((i) => i.id === h.id) !== -1}

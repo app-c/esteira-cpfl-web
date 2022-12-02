@@ -44,7 +44,7 @@ export const Shortcut = styled.div`
   padding: 0 20px;
   display: grid;
   grid-template-columns: 10rem 10rem 10rem 10rem 10rem 14rem;
-  grid-template-rows: 5rem;
+  grid-template-rows: 3rem;
   flex-direction: row;
   grid-gap: 5rem;
 

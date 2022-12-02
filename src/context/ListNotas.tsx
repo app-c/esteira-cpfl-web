@@ -1,16 +1,16 @@
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
-import React, { createContext } from 'react'
-import { onSnapshot, collection } from 'firebase/firestore'
 import { eachDayOfInterval, format } from 'date-fns'
+import { collection, onSnapshot } from 'firebase/firestore'
+import React, { createContext } from 'react'
+import { fire } from '../config/firebase'
 import {
   IC4,
   IFaturamento,
   IPropsEquipe,
   IProsEster,
-  IProsFuncionarios,
+  IProsFuncionarios
 } from '../dtos'
-import { fire } from '../config/firebase'
 
 interface ProviderProps {
   children: React.ReactNode
@@ -26,6 +26,7 @@ interface ProsNotasData {
 interface PropsContext {
   estera: IProsEster[]
   equipes: IProsFuncionarios[]
+  gds: IPropsEquipe[]
   GDS: IPropsEquipe[]
   ntReprogramada: IProsEster[]
   ntCancelada: IProsEster[]
@@ -40,6 +41,7 @@ export const NotasContext = createContext({} as PropsContext)
 
 export function NotasProvider({ children }: ProviderProps) {
   const [estera, setEstera] = React.useState<IProsEster[]>([])
+  const [gds, setGds] = React.useState<IPropsEquipe[]>([])
   const [equipes, setEquipes] = React.useState<IProsFuncionarios[]>([])
   const [ntReprogramada, setNtReprogramada] = React.useState<IProsEster[]>([])
   const [ntCancelada, setNtCancelada] = React.useState<IProsEster[]>([])
@@ -56,6 +58,7 @@ export function NotasProvider({ children }: ProviderProps) {
     const colecParc = collection(fire, 'nt-parcial')
     const colecCan = collection(fire, 'nt-cancelada')
     const colecFatu = collection(fire, 'faturamento')
+    const coleGds = collection(fire, 'gds')
 
     onSnapshot(colecNota, (h) => {
       const res = h.docs.map((p) => {
@@ -66,6 +69,16 @@ export function NotasProvider({ children }: ProviderProps) {
       })
 
       setEstera(res)
+    })
+
+    onSnapshot(coleGds, (h) => {
+      const res = h.docs.map((p) => {
+        return {
+          ...p.data(),
+        } as IPropsEquipe
+      })
+
+      setGds(res)
     })
 
     onSnapshot(colecC4, (h) => {
@@ -363,6 +376,7 @@ export function NotasProvider({ children }: ProviderProps) {
       value={{
         estera,
         equipes,
+        gds,
         GDS,
         ntCancelada,
         ntReprogramada,

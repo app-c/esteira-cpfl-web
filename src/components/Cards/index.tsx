@@ -30,7 +30,7 @@ export function Cards({
   })
   const equipe = nota.EQUIPE || []
   return (
-    <Container  border={nota.situation} >
+    <Container borderC={nota.situation} >
 
       <Content>
         <Header>

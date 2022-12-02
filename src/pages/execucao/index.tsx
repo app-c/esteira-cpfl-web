@@ -12,8 +12,7 @@ import {
 } from 'firebase/firestore'
 import {
   ChangeEvent,
-  useCallback,
-  useEffect,
+  useCallback, useEffect,
   useMemo,
   useRef,
   useState
@@ -46,6 +45,7 @@ interface ProsModal {
 
 export function Execucao() {
   const navigate = useNavigate()
+  // const {estera} = useContext(NotasContext)
 
   const motionRef = useRef<any>()
   const motionEst = useRef<any>()
@@ -68,7 +68,7 @@ export function Execucao() {
   const [ntParcial, setNtParcial] = useState<IProsEster[]>([])
   const [ntCancelada, setNtCancelada] = useState<IProsEster[]>([])
   const [file, setFile] = useState<any>(null)
-  const [select, setSelect] = useState('parcial')
+  const [select, setSelect] = useState('esteira')
 
   const [shortcut, setShortcut] = useState('')
 
@@ -300,15 +300,42 @@ export function Execucao() {
 
   useEffect(() => {
 
+    switch (shortcut) {
+      case 'baseConcroll':
+        setWidthEst(motionEst.current!.scrollWidth - motionEst.current!.offsetWidth)
+        setWidthProc(motionProc.current!.scrollWidth - motionProc.current!.offsetWidth)
+        break
+
+      case 'partial':
+        setWidthParc(motionParc.current!.scrollWidth - motionParc.current!.offsetWidth)
+
+        break
+
+      case 'finish':
+      setWidthExec(motionExec.current!.scrollWidth - motionExec.current!.offsetWidth)
+
+        break
+
+      case 'cancel':
+      setWidthCanc(motionCanc.current!.scrollWidth - motionCanc.current!.offsetWidth)
+
+        break
+
+        case 'map':
+          console.log('ok')
+        break
+      
+      default:
+        console.log(`Sorry, we are out of ${shortcut} .`);
+
+      
+    }
+
     if(select === 'parcial') {
       setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
 
     } else {
-      setWidthEst(motionEst.current!.scrollWidth - motionEst.current!.offsetWidth)
-      setWidthProc(motionProc.current!.scrollWidth - motionProc.current!.offsetWidth)
-      setWidthParc(motionParc.current!.scrollWidth - motionParc.current!.offsetWidth)
-      setWidthCanc(motionCanc.current!.scrollWidth - motionCanc.current!.offsetWidth)
-      setWidthExec(motionExec.current!.scrollWidth - motionExec.current!.offsetWidth)
+     
       setWidthPreview(
         motionRefPreview.current!.scrollWidth -
           motionRefPreview.current!.offsetWidth,
@@ -317,7 +344,7 @@ export function Execucao() {
     }
 
     
-  }, [preview, ListNotas, ntParcial, estera, ntCancelada])
+  }, [preview, ListNotas, ntParcial, estera, ntCancelada, shortcut, select])
 
 
   const deletNota = useCallback(async(id: string) => {
@@ -377,11 +404,11 @@ export function Execucao() {
       </File>
 
       <Shortcut>
-        <Botao pres={() => setShortcut('baseCroncroll')} title='Controle base' />
-        <Botao pres title='Mapa geral' />
-        <Botao title='Notas finalizadas' />
-        <Botao title='Notas parciais' />
-        <Botao title='Notas canceladas' />
+        <Botao pres={() => setShortcut('baseConcroll')} title='Controle base' />
+        <Botao pres={() => setShortcut('finish')} title='Notas finalizadas' />
+        <Botao pres={() => setShortcut('partial')} title='Notas parciais' />
+        <Botao pres={() => setShortcut('cancel')} title='Notas canceladas' />
+        <Botao pres={() => setShortcut('map')} title='Mapa geral' />
 
         <input type="text" placeholder='digite a cidade desejada' />
       </Shortcut>
@@ -410,7 +437,7 @@ export function Execucao() {
       {/* ESTEIRA */}
       {select === 'esteira' && (
         <div>
-          {shortcut === 'baseCroncroll' && (
+          {shortcut === 'baseConcroll' && (
             <div>
 
               {/* PROCESSO */}
@@ -476,7 +503,37 @@ export function Execucao() {
 
           )}
 
-          {/* {shortcut === 'map' && ()} */}
+          {shortcut === 'map' && (
+            <div>
+              <div
+                style={{
+                  alignSelf: 'center',
+                  marginTop: 30,
+                }}
+              >
+              <h3 style={{marginBottom: 5, marginTop: 15}} >Mapa geral das notas</h3>
+          </div>
+
+          {select === 'esteira' && (
+            <div>
+              {ListNotas.esteira.map((h) => (
+                <Map
+                  key={h.id}
+                  nota={h.Nota}
+                  data={h.Dt_programação}
+                  mo={h.MO}
+                  equipes={h.EQUIPE || []}
+                  cidade={h.cidade}
+                  obs={h.obsExecuçao || ''}
+                  encarregado={h.SUPERVISOR || ''}
+                  tes={h.TLE}
+                />
+              ))}
+            </div>
+          )}
+
+            </div>
+          )}
 
           {shortcut === 'finish' && (
             <ContainerCards>
@@ -507,6 +564,7 @@ export function Execucao() {
               </Carousel>
             </ContainerCards>
           )}
+          
           {shortcut === 'partial' && (
               <ContainerCards>
                 {ListNotas.execP.length > 0 && (
@@ -535,6 +593,7 @@ export function Execucao() {
                 </Carousel>
               </ContainerCards>
           )}
+
           {shortcut === 'cancel' && (
                  <ContainerCards>
                  {ListNotas.execP.length > 0 && (
@@ -625,34 +684,7 @@ export function Execucao() {
           </Carousel>
         </ContainerCards>
       )}
-
-      <div
-        style={{
-          alignSelf: 'center',
-          marginTop: 30,
-        }}
-      >
-        <h3 style={{marginBottom: 5, marginTop: 15}} >Mapa geral das notas</h3>
-      </div>
-
-      {select === 'esteira' && (
-        <div>
-          {ListNotas.esteira.map((h) => (
-            <Map
-              key={h.id}
-              nota={h.Nota}
-              data={h.Dt_programação}
-              mo={h.MO}
-              equipes={h.EQUIPE || []}
-              cidade={h.cidade}
-              obs={h.obsExecuçao || ''}
-              encarregado={h.SUPERVISOR || ''}
-              tes={h.TLE}
-            />
-          ))}
-        </div>
-      )}
-
+ 
       {select === 'parcial' && (
         <div>
           {ListNotas.parc.map((h) => (
@@ -689,6 +721,7 @@ export function Execucao() {
           ))}
         </div>
       )}
+
     </Container>
   )
 }

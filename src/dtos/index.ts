@@ -40,16 +40,7 @@ export interface IProsEster {
   // CAPEX: string;
   EQUIPE?: IPropsEquipe[]
   SUPERVISOR?: string
-  situation?:
-    | 'estera'
-    | 'processo'
-    | 'parcial'
-    | 'executada'
-    | 'cancelada'
-    | 'retorno_parcial'
-    | 'nt_parcial'
-    | 'nt_cancelada'
-    | 'preview'
+  situation: 'estera' | 'processo' | 'parcial' | 'executada' | 'cancelada'
   PORCENTUAL?: number
   OBSERVACAO: string
   // Dt_parcial?: string

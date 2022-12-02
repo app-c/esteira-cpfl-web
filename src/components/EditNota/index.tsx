@@ -50,7 +50,7 @@ export function EditNota({ nota, closed }: Props) {
 
   const eqp = nota.EQUIPE || []
   const [select, setSelect] = useState<IPropsEquipe[]>(eqp)
-  const [selectAlert, setSelectAlert] = useState<IAlert[]>(nota.alertas)
+  const [selectAlert, setSelectAlert] = useState<IAlert[]>([])
   const [obsPlanejamento, setObsPlanejamento] = useState(nota.obsPlanejamento)
 
   const toggleSecection = useCallback(

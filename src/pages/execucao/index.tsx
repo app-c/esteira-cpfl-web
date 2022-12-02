@@ -5,14 +5,12 @@ import {
   addDoc,
   collection,
   deleteDoc,
-  doc,
-  onSnapshot,
-  setDoc,
+  doc, setDoc,
   updateDoc
 } from 'firebase/firestore'
 import {
   ChangeEvent,
-  useCallback, useEffect,
+  useCallback, useContext, useEffect,
   useMemo,
   useRef,
   useState
@@ -27,6 +25,7 @@ import { Header } from '../../components/Header'
 import { Map } from '../../components/Map'
 import { ModalTratativa } from '../../components/ModalTratativa'
 import { fire } from '../../config/firebase'
+import { NotasContext } from '../../context/ListNotas'
 import { IProsEster } from '../../dtos'
 import {
   Carousel,
@@ -45,7 +44,7 @@ interface ProsModal {
 
 export function Execucao() {
   const navigate = useNavigate()
-  // const {estera} = useContext(NotasContext)
+  const {estera, ntReprogramada, ntCancelada, gds} = useContext(NotasContext)
 
   const motionRef = useRef<any>()
   const motionEst = useRef<any>()
@@ -64,9 +63,7 @@ export function Execucao() {
   const [widthCanc, setWidthCanc] = useState(0)
 
   const [preview, setPreview] = useState<IProsEster[]>([])
-  const [estera, setEstera] = useState<IProsEster[]>([])
-  const [ntParcial, setNtParcial] = useState<IProsEster[]>([])
-  const [ntCancelada, setNtCancelada] = useState<IProsEster[]>([])
+  const [ntParcial, setNtParcial] = useState<IProsEster[]>(ntReprogramada)
   const [file, setFile] = useState<any>(null)
   const [select, setSelect] = useState('esteira')
 
@@ -126,59 +123,7 @@ export function Execucao() {
     })
   }, [])
 
-  useEffect(() => {
-    onSnapshot(db, (h) => {
-      const rs = h.docs
-        .map((p) => {
-          return {
-            ...p.data(),
-            id: p.id,
-          } as IProsEster
-        })
-        .sort((a, b) => {
-          if (b.Dt_programação > a.Dt_programação) {
-            return -1
-          }
-          return 0
-        })
 
-      setEstera(rs)
-    })
-
-    onSnapshot(dp, (h) => {
-      const rs = h.docs.map((p) => {
-        return {
-          ...p.data(),
-          id: p.id,
-        } as IProsEster
-      })
-      const res = rs.sort((a, b) => {
-        if (b.Dt_programação > a.Dt_programação) {
-          return -1
-        }
-        return 0
-      })
-
-      setNtParcial(res)
-    })
-
-    onSnapshot(dc, (h) => {
-      const rs = h.docs.map((p) => {
-        return {
-          ...p.data(),
-          id: p.id,
-        } as IProsEster
-      })
-      const res = rs.sort((a, b) => {
-        if (b.Dt_programação > a.Dt_programação) {
-          return -1
-        }
-        return 0
-      })
-
-      setNtCancelada(res)
-    })
-  }, [])
 
   const ListNotas = useMemo(() => {
     const esteira: IProsEster[] = []

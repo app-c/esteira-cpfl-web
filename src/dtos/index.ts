@@ -74,6 +74,7 @@ export interface IPropsEquipe {
   mobilidade: boolean
   dados: IProsFuncionarios[]
   faturamento: number
+  data: string
 }
 
 export interface IFaturamento {

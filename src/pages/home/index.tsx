@@ -4,6 +4,7 @@ import { addDoc, collection, onSnapshot } from 'firebase/firestore'
 import {
   ChangeEvent,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -17,6 +18,7 @@ import { EditNota } from '../../components/EditNota'
 import { Header } from '../../components/Header'
 import { Map } from '../../components/Map'
 import { fire } from '../../config/firebase'
+import { NotasContext } from '../../context/ListNotas'
 import { IProsEster } from '../../dtos'
 import {
   Carousel,
@@ -34,6 +36,7 @@ interface ProsModal {
 }
 
 export function Home() {
+  const { gds } = useContext(NotasContext)
   const motionRef = useRef<any>()
   const motionRefPreview = useRef<any>()
   const [width, setWidth] = useState(0)
@@ -239,6 +242,28 @@ export function Home() {
     )
   }, [preview, ListNotas, ntParcial, estera, ntCancelada])
 
+  const openModaEdit = useCallback(
+    (nt: IProsEster) => {
+      const cole = collection(fire, 'gds')
+      const upDd = []
+      const fil = gds.filter((h) => h.data === nt.Dt_programação)
+      const gd = gds.filter((h) => h.data === '00/00/0000')
+
+      console.log(fil.length)
+      if (fil.length === 0) {
+        gd.forEach((h) => {
+          const dt = {
+            ...h,
+            data: nt.Dt_programação,
+          }
+          addDoc(cole, dt).then(() => console.log('ok'))
+        })
+      }
+      setOpemModalEsteira({ info: nt, modal: true })
+    },
+    [gds],
+  )
+
   return (
     <Container>
       <Header
@@ -325,7 +350,7 @@ export function Home() {
                     key={nt.id}
                     nota={nt}
                     pres={() => {
-                      setOpemModalEsteira({ info: nt, modal: true })
+                      openModaEdit(nt)
                     }}
                   />
                 ))}
@@ -451,4 +476,7 @@ export function Home() {
       )}
     </Container>
   )
+}
+function useContex() {
+  throw new Error('Function not implemented.')
 }

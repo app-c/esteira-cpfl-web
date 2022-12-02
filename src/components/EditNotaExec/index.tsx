@@ -39,10 +39,10 @@ const Officer = [
 ]
 
 export function EditNotaExec({ nota, closed }: Props) {
-  const { gds } = useContext(NotasContext)
+  const { GDS } = useContext(NotasContext)
 
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
-    gds.filter((h) => {
+    GDS.filter((h) => {
       if (
         h.equipe !== 'MONTADOR' &&
         h.equipe !== 'VIABILIDADE' &&

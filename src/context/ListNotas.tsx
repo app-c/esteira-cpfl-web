@@ -75,6 +75,7 @@ export function NotasProvider({ children }: ProviderProps) {
       const res = h.docs.map((p) => {
         return {
           ...p.data(),
+          id: p.id,
         } as IPropsEquipe
       })
 

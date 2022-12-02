@@ -1,8 +1,9 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable array-callback-return */
 import { Form } from '@unform/web'
 import { format } from 'date-fns'
 import { collection, doc, updateDoc } from 'firebase/firestore'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
 import { IAlert, INtSituation, IPropsEquipe, IProsEster } from '../../dtos'
@@ -29,17 +30,25 @@ interface Props {
 }
 
 export function EditNota({ nota, closed }: Props) {
-  const { GDS } = useContext(NotasContext)
+  const { gds } = useContext(NotasContext)
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
-    GDS.filter((h) => {
-      if (
-        h.equipe !== 'MONTADOR' &&
-        h.equipe !== 'VIABILIDADE' &&
-        h.equipe !== 'ALMOXARIFADO'
-      ) {
-        return h
-      }
-    }),
+    gds
+      .filter((h) => {
+        if (
+          h.equipe !== 'MONTADOR' &&
+          h.equipe !== 'VIABILIDADE' &&
+          h.equipe !== 'ALMOXARIFADO' &&
+          h.data === nota.Dt_programação
+        ) {
+          return h
+        }
+      })
+      .sort((a, b) => {
+        if (b.equipe < a.equipe) {
+          return 0
+        }
+        return -1
+      }),
   )
 
   const [ntSituation, setNtSituation] = useState<INtSituation>(
@@ -53,6 +62,14 @@ export function EditNota({ nota, closed }: Props) {
   const [selectAlert, setSelectAlert] = useState<IAlert[]>([])
   const [obsPlanejamento, setObsPlanejamento] = useState(nota.obsPlanejamento)
 
+  const equipe = useMemo(() => {
+    return bancoEquipe.map((h) => {
+      return {
+        ...h,
+      }
+    })
+  }, [bancoEquipe, nota, select])
+
   const toggleSecection = useCallback(
     (item: IPropsEquipe) => {
       const index = select.findIndex((i) => i.id === item.id)
@@ -60,12 +77,16 @@ export function EditNota({ nota, closed }: Props) {
       if (index !== -1) {
         arrSelect.splice(index, 1)
       } else {
-        arrSelect.push(item)
+        const dt = {
+          ...item,
+          faturamento: nota.MO / select.length,
+        }
+        arrSelect.push(dt)
       }
 
       setSelect(arrSelect)
     },
-    [select],
+    [nota, select],
   )
 
   const toggleSecectionAlert = useCallback(
@@ -230,7 +251,7 @@ export function EditNota({ nota, closed }: Props) {
           </Content>
 
           <ContainerEquipe className="equipe">
-            {bancoEquipe.map((h) => (
+            {equipe.map((h) => (
               <button
                 style={{
                   background:
@@ -246,7 +267,7 @@ export function EditNota({ nota, closed }: Props) {
                   <h4>{h.equipe}</h4>
                 </header>
                 <p>Meta Us: 24</p>
-                <p>Orçado: 10</p>
+                <p>Orçado: {h.faturamento}</p>
               </button>
             ))}
           </ContainerEquipe>

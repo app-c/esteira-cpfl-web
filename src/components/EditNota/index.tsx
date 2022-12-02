@@ -10,6 +10,7 @@ import { IAlert, INtSituation, IPropsEquipe, IProsEster } from '../../dtos'
 import { theme } from '../../theme/theme'
 import { alert as Alert } from '../../utils/alert'
 import { notaSituation } from '../../utils/notaSituation'
+import { BoxEquipe } from '../BoxEquipe'
 import { Input } from '../Input/Input'
 import {
   Button,
@@ -24,6 +25,7 @@ import {
   ContentSituation,
   ContentTitle
 } from './styles'
+
 interface Props {
   nota: IProsEster
   closed: () => void
@@ -31,6 +33,7 @@ interface Props {
 
 export function EditNota({ nota, closed }: Props) {
   const { gds } = useContext(NotasContext)
+
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
     gds
       .filter((h) => {
@@ -63,30 +66,51 @@ export function EditNota({ nota, closed }: Props) {
   const [obsPlanejamento, setObsPlanejamento] = useState(nota.obsPlanejamento)
 
   const equipe = useMemo(() => {
+    const leng = select.length
     return bancoEquipe.map((h) => {
+      let fat = 0
+      select.forEach((p) => {
+        if (p.equipe === h.equipe) {
+          fat = (nota.MO + h.faturamento) / leng / 10
+        }
+      })
+      // console.log(ft.length)
       return {
         ...h,
+        faturamento: fat,
       }
     })
-  }, [bancoEquipe, nota, select])
+  }, [bancoEquipe, nota.MO, select])
 
   const toggleSecection = useCallback(
     (item: IPropsEquipe) => {
-      const index = select.findIndex((i) => i.id === item.id)
+      const index = select.findIndex((i) => i.equipe === item.equipe)
+
       const arrSelect = [...select]
       if (index !== -1) {
         arrSelect.splice(index, 1)
       } else {
-        const dt = {
-          ...item,
-          faturamento: nota.MO / select.length,
-        }
-        arrSelect.push(dt)
+        arrSelect.push(item)
       }
 
-      setSelect(arrSelect)
+      setSelect(
+        arrSelect.map((h) => {
+          return {
+            ...h,
+          }
+        }),
+      )
     },
-    [nota, select],
+    [nota.MO, select],
+  )
+
+  console.log(
+    select.map((h) => {
+      return {
+        faturamento: (nota.MO + h.faturamento) / select.length,
+      }
+    }),
+    select.length,
   )
 
   const toggleSecectionAlert = useCallback(
@@ -117,10 +141,6 @@ export function EditNota({ nota, closed }: Props) {
         obsTratativa: nota.obsTratativa || '',
         updateAt: format(new Date(), 'dd/MM/yyyy'),
       }
-
-      console.log('submit')
-
-      setNotaUpdade(dados)
     },
     [nota, select, ntSituation, obsPlanejamento, selectAlert],
   )
@@ -252,23 +272,13 @@ export function EditNota({ nota, closed }: Props) {
 
           <ContainerEquipe className="equipe">
             {equipe.map((h) => (
-              <button
-                style={{
-                  background:
-                    select.findIndex((i) => i.id === h.id) !== -1
-                      ? theme.color.green[10]
-                      : '#e2e2e2',
-                }}
+              <BoxEquipe
+                us={h.faturamento}
+                eqp={h.equipe}
+                pres={() => toggleSecection(h)}
+                select={select.findIndex((i) => i.equipe === h.equipe) !== -1}
                 key={h.id}
-                type="submit"
-                onClick={() => toggleSecection(h)}
-              >
-                <header>
-                  <h4>{h.equipe}</h4>
-                </header>
-                <p>Meta Us: 24</p>
-                <p>Orçado: {h.faturamento}</p>
-              </button>
+              />
             ))}
           </ContainerEquipe>
 

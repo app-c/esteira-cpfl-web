@@ -2,7 +2,7 @@
 /* eslint-disable array-callback-return */
 import { Form } from '@unform/web'
 import { format } from 'date-fns'
-import { collection, doc, setDoc } from 'firebase/firestore'
+import { collection, doc, updateDoc } from 'firebase/firestore'
 import { useCallback, useContext, useState } from 'react'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
@@ -39,18 +39,20 @@ const Officer = [
 ]
 
 export function EditNotaExec({ nota, closed }: Props) {
-  const { GDS } = useContext(NotasContext)
+  const { GDS, gds } = useContext(NotasContext)
 
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
-    GDS.filter((h) => {
-      if (
-        h.equipe !== 'MONTADOR' &&
-        h.equipe !== 'VIABILIDADE' &&
-        h.equipe !== 'ALMOXARIFADO'
-      ) {
-        return h
-      }
-    }),
+    gds
+      .filter((h) => {
+        if (
+          h.equipe !== 'MONTADOR' &&
+          h.equipe !== 'VIABILIDADE' &&
+          h.equipe !== 'ALMOXARIFADO'
+        ) {
+          return h
+        }
+      })
+      .filter((h) => h.data === nota.Dt_programação),
     // .map((h) => {
     //   return {
     //     ...h,
@@ -66,6 +68,7 @@ export function EditNotaExec({ nota, closed }: Props) {
   const toggleSecection = useCallback(
     (item: IPropsEquipe) => {
       const index = select.findIndex((i) => i.id === item.id)
+
       const arrSelect = [...select]
       if (index !== -1) {
         arrSelect.splice(index, 1)
@@ -97,20 +100,10 @@ export function EditNotaExec({ nota, closed }: Props) {
       const cole = collection(fire, 'notas')
       const ref = doc(cole, nota.id)
 
-      select.forEach((eq) => {
-        const cole = collection(fire, 'gds')
-        const rf = doc(cole, eq.id)
-        const dados = {
-          ...eq,
-          data: '00/00/0000',
-        }
-        setDoc(rf, dados)
+      updateDoc(ref, dados).then(() => {
+        alert('nota atualizada')
+        closed()
       })
-
-      // updateDoc(ref, dados).then(() => {
-      //   alert('nota atualizada')
-      //   closed()
-      // })
 
       console.log(dados)
     },

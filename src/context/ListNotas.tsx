@@ -77,7 +77,7 @@ export function NotasProvider({ children }: ProviderProps) {
         return {
           ...p.data(),
           id: p.id,
-        } as IPropsEquipe
+        } as IGds
       })
 
       setGds(res)
@@ -309,6 +309,7 @@ export function NotasProvider({ children }: ProviderProps) {
         mobilidade: false,
         dados: h.dados,
         faturamento: 0,
+        data: '00/00/0000',
       }
       gds.push(dt)
     })

@@ -218,6 +218,7 @@ export function EditNotaExec({ nota, closed }: Props) {
         <ContainerEquipe className="equipe">
           {bancoEquipe.map((h) => (
             <BoxEquipe
+              us={h.faturamento}
               eqp={h.equipe}
               pres={() => toggleSecection(h)}
               select={select.findIndex((i) => i.id === h.id) !== -1}

@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Container, ContainerDate, DateInput, Search } from './styles'
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function Header({ dateA, dateB, value }: Props) {
+  const navigate = useNavigate()
   const datePresent = new Date()
   const [dtA, setDateA] = useState(format(datePresent, 'yyyy-MM-dd'))
   const [dtB, setDateB] = useState(format(datePresent, 'yyyy-MM-dd'))
@@ -41,6 +43,8 @@ export function Header({ dateA, dateB, value }: Props) {
           type="date"
         />
       </ContainerDate>
+      <button onClick={() => navigate('/planejamento')}>planejamento</button>
+      <button onClick={() => navigate('/')}>base</button>
       <Search
         onChange={(h) => setSearch(h.currentTarget.value)}
         placeholder="pesquisar nota"

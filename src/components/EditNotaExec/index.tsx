@@ -42,23 +42,20 @@ export function EditNotaExec({ nota, closed }: Props) {
   const { GDS, gds } = useContext(NotasContext)
 
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
-    gds
-      .filter((h) => {
-        if (
-          h.equipe !== 'MONTADOR' &&
-          h.equipe !== 'VIABILIDADE' &&
-          h.equipe !== 'ALMOXARIFADO'
-        ) {
-          return h
-        }
-      })
-      .filter((h) => h.data === nota.Dt_programação),
-    // .map((h) => {
-    //   return {
-    //     ...h,
-    //     data: nota.Dt_programação,
-    //   }
-    // }),
+    GDS.filter((h) => {
+      if (
+        h.equipe !== 'MONTADOR' &&
+        h.equipe !== 'VIABILIDADE' &&
+        h.equipe !== 'ALMOXARIFADO'
+      ) {
+        return h
+      }
+    }).sort((a, b) => {
+      if (b.equipe < a.equipe) {
+        return 0
+      }
+      return -1
+    }),
   )
 
   const eqp = nota.EQUIPE || []
@@ -67,7 +64,7 @@ export function EditNotaExec({ nota, closed }: Props) {
 
   const toggleSecection = useCallback(
     (item: IPropsEquipe) => {
-      const index = select.findIndex((i) => i.id === item.id)
+      const index = select.findIndex((i) => i.equipe === item.equipe)
 
       const arrSelect = [...select]
       if (index !== -1) {
@@ -226,7 +223,7 @@ export function EditNotaExec({ nota, closed }: Props) {
               us={h.faturamento}
               eqp={h.equipe}
               pres={() => toggleSecection(h)}
-              select={select.findIndex((i) => i.id === h.id) !== -1}
+              select={select.findIndex((i) => i.equipe === h.equipe) !== -1}
               key={h.id}
             />
           ))}

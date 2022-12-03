@@ -7,6 +7,7 @@ import { fire } from '../config/firebase'
 import {
   IC4,
   IFaturamento,
+  IGds,
   IPropsEquipe,
   IProsEster,
   IProsFuncionarios
@@ -26,7 +27,7 @@ interface ProsNotasData {
 interface PropsContext {
   estera: IProsEster[]
   equipes: IProsFuncionarios[]
-  gds: IPropsEquipe[]
+  gds: IGds[]
   GDS: IPropsEquipe[]
   ntReprogramada: IProsEster[]
   ntCancelada: IProsEster[]
@@ -41,7 +42,7 @@ export const NotasContext = createContext({} as PropsContext)
 
 export function NotasProvider({ children }: ProviderProps) {
   const [estera, setEstera] = React.useState<IProsEster[]>([])
-  const [gds, setGds] = React.useState<IPropsEquipe[]>([])
+  const [gds, setGds] = React.useState<IGds[]>([])
   const [equipes, setEquipes] = React.useState<IProsFuncionarios[]>([])
   const [ntReprogramada, setNtReprogramada] = React.useState<IProsEster[]>([])
   const [ntCancelada, setNtCancelada] = React.useState<IProsEster[]>([])

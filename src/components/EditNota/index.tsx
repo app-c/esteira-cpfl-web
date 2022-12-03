@@ -2,7 +2,7 @@
 /* eslint-disable array-callback-return */
 import { Form } from '@unform/web'
 import { format } from 'date-fns'
-import { collection, doc, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, updateDoc } from 'firebase/firestore'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
@@ -32,26 +32,23 @@ interface Props {
 }
 
 export function EditNota({ nota, closed }: Props) {
-  const { gds } = useContext(NotasContext)
+  const { gds, GDS } = useContext(NotasContext)
 
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
-    gds
-      .filter((h) => {
-        if (
-          h.equipe !== 'MONTADOR' &&
-          h.equipe !== 'VIABILIDADE' &&
-          h.equipe !== 'ALMOXARIFADO' &&
-          h.data === nota.Dt_programação
-        ) {
-          return h
-        }
-      })
-      .sort((a, b) => {
-        if (b.equipe < a.equipe) {
-          return 0
-        }
+    GDS.filter((h) => {
+      if (
+        h.equipe !== 'MONTADOR' &&
+        h.equipe !== 'VIABILIDADE' &&
+        h.equipe !== 'ALMOXARIFADO'
+      ) {
+        return h
+      }
+    }).sort((a, b) => {
+      if (b.equipe > a.equipe) {
         return -1
-      }),
+      }
+      return 0
+    }),
   )
 
   const [ntSituation, setNtSituation] = useState<INtSituation>(
@@ -66,21 +63,39 @@ export function EditNota({ nota, closed }: Props) {
   const [obsPlanejamento, setObsPlanejamento] = useState(nota.obsPlanejamento)
 
   const equipe = useMemo(() => {
-    const leng = select.length
-    return bancoEquipe.map((h) => {
-      let fat = 0
-      select.forEach((p) => {
-        if (p.equipe === h.equipe) {
-          fat = (nota.MO + h.faturamento) / leng / 10
+    const arry: IPropsEquipe[] = []
+
+    bancoEquipe.forEach((e) => {
+      let vl = 0
+      let vlf = 0
+
+      gds.find((g) => {
+        if (g.nota !== nota.Nota && g.equipe === e.equipe) {
+          vlf = g.valor
+        }
+
+        // if (g.nota === nota.Nota && g.equipe === e.equipe) {
+        //   vlf = e.faturamento
+        // }
+      })
+
+      select.forEach((s) => {
+        if (s.equipe === e.equipe) {
+          vl = s.faturamento / select.length
         }
       })
-      // console.log(ft.length)
-      return {
-        ...h,
-        faturamento: fat,
+
+      const valor = vl + vlf
+
+      const dt = {
+        ...e,
+        faturamento: Number(valor.toFixed(0)),
       }
+
+      arry.push(dt)
     })
-  }, [bancoEquipe, nota.MO, select])
+    return arry
+  }, [bancoEquipe, gds, nota.Dt_programação, nota.Nota, select])
 
   const toggleSecection = useCallback(
     (item: IPropsEquipe) => {
@@ -90,28 +105,19 @@ export function EditNota({ nota, closed }: Props) {
       if (index !== -1) {
         arrSelect.splice(index, 1)
       } else {
-        arrSelect.push(item)
+        const dt = {
+          ...item,
+          faturamento: nota.MO,
+        }
+        arrSelect.push(dt)
       }
 
-      setSelect(
-        arrSelect.map((h) => {
-          return {
-            ...h,
-          }
-        }),
-      )
+      setSelect(arrSelect)
     },
     [nota.MO, select],
   )
 
-  console.log(
-    select.map((h) => {
-      return {
-        faturamento: (nota.MO + h.faturamento) / select.length,
-      }
-    }),
-    select.length,
-  )
+  console.log(select)
 
   const toggleSecectionAlert = useCallback(
     (item: IAlert) => {
@@ -129,32 +135,85 @@ export function EditNota({ nota, closed }: Props) {
   )
 
   const handleSubimit = useCallback(
-    (data: object) => {
+    (data: IProsEster) => {
+      const mo = String(data.MO).replace(/[^0-9]/g, '')
+
+      const eqp = select.map((h) => {
+        const fil = equipe.find((p) => p.equipe === h.equipe)
+        // console.log(fil?.faturamento)
+        return {
+          ...h,
+          faturamento: fil?.faturamento,
+        }
+      })
+
       const dados = {
         ...data,
         ...nota,
-        EQUIPE: select,
+        Dt_programação: data.Dt_programação,
+        TLE: data.TLE,
+        Nota: data.Nota,
+        cidade: data.cidade,
+        MO: Number(mo) / 100,
+        EQUIPE: eqp,
         ntSituation,
-        obsPlanejamento,
+        obsPlanejamento: obsPlanejamento || '',
         alertas: selectAlert,
         obsExecuçao: nota.obsExecuçao || '',
         obsTratativa: nota.obsTratativa || '',
         updateAt: format(new Date(), 'dd/MM/yyyy'),
       }
+
+      const cole = collection(fire, 'planejamento')
+      const cl = collection(fire, 'gds')
+      const ref = doc(cole, nota.id)
+
+      gds.forEach((h) => {
+        if (h.nota === nota.Nota && h.data === nota.Dt_programação) {
+          const rf = doc(cl, h.id)
+
+          updateDoc(rf, {
+            valor: 0,
+          })
+        }
+      })
+
+      eqp.forEach((h) => {
+        const fil = gds.find(
+          (p) => p.equipe === h.equipe && p.nota === nota.Nota,
+        )
+
+        if (fil) {
+          const rf = doc(cl, fil.id)
+          const dt = {
+            equipe: fil.equipe,
+            nota: nota.Nota,
+            data: nota.Dt_programação,
+            valor: Number(h.faturamento),
+          }
+          updateDoc(rf, dt).then(() => console.log('gds atualizado'))
+        } else {
+          const dt = {
+            equipe: h.equipe,
+            nota: nota.Nota,
+            data: nota.Dt_programação,
+            valor: Number(h.faturamento),
+          }
+
+          addDoc(cl, dt).then(() => console.log('gds criados'))
+        }
+      })
+
+      updateDoc(ref, dados)
+        .then(() => {
+          alert('nota atualizada')
+          closed()
+        })
+        .then(() => console.log('0k'))
+        .catch((h) => console.log(h))
     },
-    [nota, select, ntSituation, obsPlanejamento, selectAlert],
+    [select, nota, ntSituation, obsPlanejamento, selectAlert, equipe, closed],
   )
-
-  const handleUpdade = useCallback(() => {
-    const cole = collection(fire, 'planejamento')
-    const ref = doc(cole, nota.id)
-    const up = notaUpdate || {}
-
-    updateDoc(ref, up).then(() => {
-      alert('nota atualizada')
-      closed()
-    })
-  }, [closed, nota.id, notaUpdate])
 
   const numero = String(nota.MO)
   const val = numero.replace(/([0-9]{0})$/g, '.$100')
@@ -164,20 +223,20 @@ export function EditNota({ nota, closed }: Props) {
   })
 
   return (
-    <Form
-      onSubmit={handleSubimit}
-      initialData={{
-        nota: nota.Nota,
-        mo,
-        dt_programacao: nota.Dt_programação,
-        documento: nota.TLE,
-        cidade: nota.cidade,
-      }}
-    >
-      <Container>
-        <ContentGrid>
-          <Content className="info">
-            <h4>Informação da nota</h4>
+    <Container>
+      <ContentGrid>
+        <Content className="info">
+          <h4>Informação da nota</h4>
+          <Form
+            onSubmit={handleSubimit}
+            initialData={{
+              Nota: nota.Nota,
+              MO: mo,
+              Dt_programação: nota.Dt_programação,
+              TLE: nota.TLE,
+              cidade: nota.cidade,
+            }}
+          >
             <div className="info">
               <ContentTitle className="title">
                 <p>Nota: </p>
@@ -218,22 +277,22 @@ export function EditNota({ nota, closed }: Props) {
               <ContentElement>
                 <Input
                   style={{ marginBottom: 5 }}
-                  name="nota"
+                  name="Nota"
                   placeholder={'número da nota'}
                 />
                 <Input
                   style={{ marginBottom: 5 }}
-                  name="mo"
-                  placeholder={'número da nota'}
+                  name="MO"
+                  placeholder={'valor MO'}
                 />
                 <Input
-                  name="dt_programacao"
+                  name="Dt_programação"
                   style={{ marginBottom: 5 }}
-                  placeholder={'número da nota'}
+                  placeholder={'data da programação'}
                 />
 
                 <Input
-                  name="documento"
+                  name="TLE"
                   style={{ marginBottom: 5 }}
                   placeholder={'documento'}
                 />
@@ -251,6 +310,7 @@ export function EditNota({ nota, closed }: Props) {
 /> */}
               </ContentElement>
             </div>
+
             <div className="obsPlanejamento">
               <p>Observações do planejamento:</p>
               <textarea
@@ -262,70 +322,71 @@ export function EditNota({ nota, closed }: Props) {
                 rows={5}
               ></textarea>
             </div>
+
             <div className="obsFocal">
               <p>Observações da tratativa</p>
             </div>
+
             <div className="obsExecucao">
               <p>Observações da execução:</p>
             </div>
-          </Content>
 
-          <ContainerEquipe className="equipe">
-            {equipe.map((h) => (
-              <BoxEquipe
-                us={h.faturamento}
-                eqp={h.equipe}
-                pres={() => toggleSecection(h)}
-                select={select.findIndex((i) => i.equipe === h.equipe) !== -1}
-                key={h.id}
-              />
-            ))}
-          </ContainerEquipe>
-
-          <ContainerSituaton className="situation">
-            <h4>Situação da nota</h4>
-            {notaSituation.map((h) => (
-              <ContentSituation
-                onClick={() => setNtSituation(h)}
-                color={ntSituation.sigla === h.sigla ? h.color : h.color1}
-                key={h.id}
+            <ContainerButton>
+              <Button
+                style={{ background: theme.color.orange[50] }}
+                type="submit"
+                onClick={closed}
               >
-                <p>{h.sigla}</p>
-              </ContentSituation>
-            ))}
-          </ContainerSituaton>
+                Cancelar
+              </Button>
+              <Button type="submit">Salvar</Button>
+            </ContainerButton>
+          </Form>
+        </Content>
 
-          <ContainerAlert className="alert">
-            <h4>Alertas</h4>
-            {Alert.map((h) => (
-              <button
-                style={{
-                  background:
-                    selectAlert.findIndex((i) => i.id === h.id) !== -1
-                      ? theme.color.orange[50]
-                      : theme.color.orange[10],
-                }}
-                onClick={() => toggleSecectionAlert(h)}
-                key={h.id}
-              >
-                <p>{h.name}</p>
-              </button>
-            ))}
-          </ContainerAlert>
-        </ContentGrid>
-        <ContainerButton>
-          <Button
-            style={{ background: theme.color.orange[50] }}
-            type="submit"
-            onClick={closed}
-          >
-            Cancelar
-          </Button>
-          <Button onClick={handleUpdade} type="submit">
-            Salvar
-          </Button>
-        </ContainerButton>
-      </Container>
-    </Form>
+        <ContainerEquipe className="equipe">
+          {equipe.map((h) => (
+            <BoxEquipe
+              us={h.faturamento}
+              eqp={h.equipe}
+              pres={() => toggleSecection(h)}
+              select={select.findIndex((i) => i.equipe === h.equipe) !== -1}
+              key={h.id}
+            />
+          ))}
+        </ContainerEquipe>
+
+        <ContainerSituaton className="situation">
+          <h4>Situação da nota</h4>
+          {notaSituation.map((h) => (
+            <ContentSituation
+              onClick={() => setNtSituation(h)}
+              color={ntSituation.sigla === h.sigla ? h.color : h.color1}
+              key={h.id}
+            >
+              <p>{h.sigla}</p>
+            </ContentSituation>
+          ))}
+        </ContainerSituaton>
+
+        <ContainerAlert className="alert">
+          <h4>Alertas</h4>
+          {Alert.map((h) => (
+            <button
+              style={{
+                background:
+                  selectAlert.findIndex((i) => i.id === h.id) !== -1
+                    ? theme.color.orange[50]
+                    : theme.color.orange[10],
+              }}
+              onClick={() => toggleSecectionAlert(h)}
+              key={h.id}
+            >
+              <p>{h.name}</p>
+            </button>
+          ))}
+        </ContainerAlert>
+      </ContentGrid>
+    </Container>
   )
 }

@@ -36,7 +36,7 @@ interface ProsModal {
 }
 
 export function Home() {
-  const { gds } = useContext(NotasContext)
+  const { gds, GDS, ntCancelada, ntReprogramada } = useContext(NotasContext)
   const motionRef = useRef<any>()
   const motionRefPreview = useRef<any>()
   const [width, setWidth] = useState(0)
@@ -45,8 +45,7 @@ export function Home() {
   const [notas, setNotas] = useState<IProsEster[]>([])
   const [preview, setPreview] = useState<IProsEster[]>([])
   const [estera, setEstera] = useState<IProsEster[]>([])
-  const [ntParcial, setNtParcial] = useState<IProsEster[]>([])
-  const [ntCancelada, setNtCancelada] = useState<IProsEster[]>([])
+  const [ntParcial, setNtParcial] = useState<IProsEster[]>(ntReprogramada)
   const [file, setFile] = useState<any>(null)
   const [select, setSelect] = useState('esteira')
 
@@ -62,8 +61,6 @@ export function Home() {
   const [modal, setModal] = useState(false)
 
   const db = collection(fire, 'planejamento')
-  const dp = collection(fire, 'nt-parcial')
-  const dc = collection(fire, 'nt-cancelada')
 
   const submit = useCallback(async () => {
     setPreview([])
@@ -91,7 +88,6 @@ export function Home() {
       modal: false,
     })
   }, [])
-  console.log(opemModalEsteira.modal)
 
   useEffect(() => {
     onSnapshot(db, (h) => {
@@ -111,40 +107,6 @@ export function Home() {
 
       setEstera(rs)
     })
-
-    onSnapshot(dp, (h) => {
-      const rs = h.docs.map((p) => {
-        return {
-          ...p.data(),
-          id: p.id,
-        } as IProsEster
-      })
-      const res = rs.sort((a, b) => {
-        if (b.Dt_programação > a.Dt_programação) {
-          return -1
-        }
-        return 0
-      })
-
-      setNtParcial(res)
-    })
-
-    onSnapshot(dc, (h) => {
-      const rs = h.docs.map((p) => {
-        return {
-          ...p.data(),
-          id: p.id,
-        } as IProsEster
-      })
-      const res = rs.sort((a, b) => {
-        if (b.Dt_programação > a.Dt_programação) {
-          return -1
-        }
-        return 0
-      })
-
-      setNtCancelada(res)
-    })
   }, [])
 
   const ListNotas = useMemo(() => {
@@ -154,7 +116,6 @@ export function Home() {
 
     const date = addDays(new Date(dateA), 1)
     const datB = addDays(new Date(dateB), 1)
-    console.log(dateA)
 
     if (date.getTime() <= datB.getTime()) {
       const ruslt = eachDayOfInterval({

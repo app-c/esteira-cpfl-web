@@ -31,8 +31,6 @@ export const ContentGrid = styled.div`
     grid-template-columns: 1fr 1fr;
     grid-gap: 1rem;
     flex-direction: row;
-    background: ;
-    /* height: 7rem; */
     border-radius: 5px;
     padding: 5px;
     font-size: 16px;

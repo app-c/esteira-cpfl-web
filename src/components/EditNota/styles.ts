@@ -19,8 +19,8 @@ export const Container = styled.div`
 export const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 25rem 1fr;
-  grid-template-rows: 25rem 14rem 15rem 15rem;
-  grid-gap: 2rem;
+  grid-template-rows: 25rem 10rem 10rem 25rem;
+  grid-gap: 1rem;
   /* background-color: #fff; */
 
   .situation {
@@ -36,10 +36,9 @@ export const ContentGrid = styled.div`
 
 export const ContainerEquipe = styled.div`
   padding: 5px;
-
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 6rem 6rem 6rem 6rem;
+  grid-template-rows: 5rem 5rem 5rem 5rem;
   grid-gap: 0.5rem;
 
   button {
@@ -61,12 +60,14 @@ export const ContainerEquipe = styled.div`
     p {
       margin-top: 5px;
       font-size: 0.8rem;
+      color: ${theme.color.dark[10]};
+      align-self: flex-start;
     }
   }
 `
 export const ContainerSituaton = styled.div`
   /* background-color: #fff; */
-
+  margin-top: -2rem;
   padding: 10px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -160,10 +161,12 @@ export const Content = styled.div`
   .obsExecucao {
     display: grid;
     background: #c5d377;
-    height: 7rem;
+    border-radius: 5px;
   }
 
   .obsFocal {
+    border-radius: 5px;
+
     display: grid;
     background: #77bdd3;
     height: 7rem;
@@ -183,6 +186,7 @@ export const ContentTitle = styled.div`
     margin-bottom: 5px;
     color: ${theme.color.white[50]};
     font-weight: 400;
+    font-size: 14px;
   }
 `
 
@@ -194,6 +198,10 @@ export const ContentElement = styled.div`
 `
 
 export const ContainerButton = styled.div`
+  position: absolute;
+  bottom: 0;
+  top: 60rem;
+  left: 35rem;
   display: flex;
   flex-direction: row;
   width: 50%;

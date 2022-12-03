@@ -96,3 +96,11 @@ export interface IAlert {
   ico: string
   id: number
 }
+
+export interface IGds {
+  data: string
+  valor: number
+  equipe: string
+  nota: string
+  id: string
+}

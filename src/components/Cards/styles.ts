@@ -6,6 +6,10 @@ interface PropsContainer {
   borderC: BorderProps
 }
 
+interface PropsHeader {
+  color: string
+}
+
 const borderVariant = {
   executada: theme.color.green[10],
   parcial: theme.color.orange[10],
@@ -79,16 +83,18 @@ export const BoxEquipe = styled.div`
   }
 `
 
-export const Header = styled.div`
+export const Header = styled.div<PropsHeader>`
   display: flex;
-  background-color: #6ca8b6;
+  flex-direction: row;
+  padding: 3px 8px;
+  background-color: ${({ color: h }) => h};
   display: flex;
-  width: 100%;
+  width: 1fr;
   border-width: 5px;
   border-radius: 4px;
 
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 
   font-weight: 400;
 `

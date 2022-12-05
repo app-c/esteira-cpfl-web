@@ -306,6 +306,8 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.est.map((nt) => (
                   <Cards
+                    sigleSituation={nt.ntSituation.sigla}
+                    colorSituation={nt.ntSituation.color}
                     deletar={() => {}}
                     submit={upload}
                     key={nt.id}

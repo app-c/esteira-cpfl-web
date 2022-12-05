@@ -39,6 +39,7 @@ export interface IProsEster {
   MO: number
   // CAPEX: string;
   EQUIPE?: IPropsEquipe[]
+  ntSituation: INtSituation
   SUPERVISOR?: string
   situation: 'estera' | 'processo' | 'parcial' | 'executada' | 'cancelada'
   PORCENTUAL?: number

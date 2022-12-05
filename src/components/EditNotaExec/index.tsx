@@ -2,8 +2,8 @@
 /* eslint-disable array-callback-return */
 import { Form } from '@unform/web'
 import { format } from 'date-fns'
-import { collection, doc, updateDoc } from 'firebase/firestore'
-import { useCallback, useContext, useState } from 'react'
+import { addDoc, collection, doc, updateDoc } from 'firebase/firestore'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
 import { IPropsEquipe, IProsEster } from '../../dtos'
@@ -39,7 +39,9 @@ const Officer = [
 ]
 
 export function EditNotaExec({ nota, closed }: Props) {
+  const eqp = nota.EQUIPE || []
   const { GDS, gds } = useContext(NotasContext)
+  const [select, setSelect] = useState<IPropsEquipe[]>(eqp)
 
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
     GDS.filter((h) => {
@@ -58,8 +60,42 @@ export function EditNotaExec({ nota, closed }: Props) {
     }),
   )
 
-  const eqp = nota.EQUIPE || []
-  const [select, setSelect] = useState<IPropsEquipe[]>(eqp)
+  const equipe = useMemo(() => {
+    const arry: IPropsEquipe[] = []
+
+    bancoEquipe.forEach((e) => {
+      let vl = 0
+      let vlf = 0
+
+      gds.find((g) => {
+        if (g.nota !== nota.Nota && g.equipe === e.equipe) {
+          vlf = g.valor
+        }
+
+        // if (g.nota === nota.Nota && g.equipe === e.equipe) {
+        //   vlf = e.faturamento
+        // }
+      })
+
+      select.forEach((s) => {
+        if (s.equipe === e.equipe) {
+          vl = s.faturamento / select.length
+        }
+      })
+
+      const valor = vl + vlf
+
+      const dt = {
+        ...e,
+        faturamento: Number(valor.toFixed(0)),
+      }
+
+      arry.push(dt)
+    })
+
+    return arry
+  }, [bancoEquipe, gds, nota.Nota, select])
+
   const [officer, setOfficer] = useState(nota.SUPERVISOR || 'nenhum')
 
   const toggleSecection = useCallback(
@@ -70,23 +106,36 @@ export function EditNotaExec({ nota, closed }: Props) {
       if (index !== -1) {
         arrSelect.splice(index, 1)
       } else {
-        arrSelect.push(item)
+        const dt = {
+          ...item,
+          faturamento: nota.MO,
+        }
+        arrSelect.push(dt)
       }
 
       setSelect(arrSelect)
     },
-    [select],
+    [nota.MO, select],
   )
 
   const handleSubimit = useCallback(
     (data: IProsEster) => {
       const mo = String(data.MO).slice()
+
+      const Eqp = select.map((h) => {
+        const fil = equipe.find((p) => p.equipe === h.equipe)
+        return {
+          ...h,
+          faturamento: fil?.faturamento,
+        }
+      })
+
       const { TLE, cidade, Dt_programação, Nota, MO } = data
       const dados = {
         ...nota,
         cidade,
         TLE,
-        EQUIPE: select,
+        EQUIPE: Eqp,
         Dt_programação,
         SUPERVISOR: officer,
         obsExecuçao: '',
@@ -96,15 +145,50 @@ export function EditNotaExec({ nota, closed }: Props) {
 
       const cole = collection(fire, 'notas')
       const ref = doc(cole, nota.id)
+      const cl = collection(fire, 'gds')
+
+      gds.forEach((h) => {
+        if (h.nota === nota.Nota && h.data === nota.Dt_programação) {
+          const rf = doc(cl, h.id)
+
+          updateDoc(rf, {
+            valor: 0,
+          })
+        }
+      })
+
+      Eqp.forEach((h) => {
+        const fil = gds.find(
+          (p) => p.equipe === h.equipe && p.nota === nota.Nota,
+        )
+
+        if (fil) {
+          const rf = doc(cl, fil.id)
+          const dt = {
+            equipe: fil.equipe,
+            nota: nota.Nota,
+            data: nota.Dt_programação,
+            valor: Number(h.faturamento),
+          }
+          updateDoc(rf, dt).then(() => console.log('gds atualizado'))
+        } else {
+          const dt = {
+            equipe: h.equipe,
+            nota: nota.Nota,
+            data: nota.Dt_programação,
+            valor: Number(h.faturamento),
+          }
+
+          addDoc(cl, dt).then(() => console.log('gds criados'))
+        }
+      })
 
       updateDoc(ref, dados).then(() => {
         alert('nota atualizada')
         closed()
       })
-
-      console.log(dados)
     },
-    [nota, select, officer, closed],
+    [select, nota, officer, gds, equipe, closed],
   )
 
   const numero = String(nota.MO)
@@ -218,7 +302,7 @@ export function EditNotaExec({ nota, closed }: Props) {
         </Content>
 
         <ContainerEquipe className="equipe">
-          {bancoEquipe.map((h) => (
+          {equipe.map((h) => (
             <BoxEquipe
               us={h.faturamento}
               eqp={h.equipe}

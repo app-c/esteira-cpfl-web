@@ -2,6 +2,9 @@
 import { IProsEster } from '../../dtos'
 import { Botao } from '../Button'
 import { BoxEquipe, Container, ContainerButton, Content, Header } from './styles'
+      
+import { IconContext } from 'react-icons'
+import { FaBeer } from 'react-icons/fa'
 
 interface Props {
   nota: IProsEster
@@ -12,10 +15,12 @@ interface Props {
   title1?: string
   title2?: string
   title3?: string
+  colorSituation?: string
+  sigleSituation?: string
 }
 
 export function Cards({
-  nota,
+  nota, colorSituation = '#7c8a7f', sigleSituation,
   pres,
   deletar,
   submit,
@@ -30,35 +35,40 @@ export function Cards({
   })
   const equipe = nota.EQUIPE || []
   return (
-    <Container borderC={nota.situation} >
+    <IconContext.Provider value={{color: 'blue',}} >
 
-      <Content>
-        <Header>
-          <p>{nota.Nota}</p>
-        </Header>
+      <Container borderC={nota.situation} >
 
-        <div className='texto' >
-          <p>{nota.Dt_programação}</p>
-          <p>Encarregado: {nota.SUPERVISOR}</p>
-          <p>Documento: {nota.TLE}</p>
-        </div>
+        <Content>
+          <Header color={colorSituation} >
+            <p>{nota.Nota}</p>
+            <FaBeer />
+            <h6>{sigleSituation}</h6>
+          </Header>
 
-        <BoxEquipe>
-            {equipe.map(h => (
-              <div key={h.id} >
-                <p  >{h.equipe}</p>
-              </div>
-            ))}
-        </BoxEquipe>
+          <div className='texto' >
+            <p>{nota.Dt_programação}</p>
+            <p>Encarregado: {nota.SUPERVISOR}</p>
+            <p>Documento: {nota.TLE}</p>
+          </div>
 
-        <ContainerButton>
-          <Botao pres={submit} title={title1} />
-          <Botao pres={pres} title={title2} variant='secundary' />
-          <Botao pres={deletar} title={title3} variant='danger' />
-        </ContainerButton>
-      </Content>
+          <BoxEquipe>
+              {equipe.map(h => (
+                <div key={h.id} >
+                  <p  >{h.equipe}</p>
+                </div>
+              ))}
+          </BoxEquipe>
 
-     
-    </Container>
+          <ContainerButton>
+            <Botao pres={submit} title={title1} />
+            <Botao pres={pres} title={title2} variant='secundary' />
+            <Botao pres={deletar} title={title3} variant='danger' />
+          </ContainerButton>
+        </Content>
+
+      
+      </Container>
+    </IconContext.Provider>
   )
 }

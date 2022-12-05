@@ -95,7 +95,7 @@ export function EditNota({ nota, closed }: Props) {
       arry.push(dt)
     })
     return arry
-  }, [bancoEquipe, gds, nota.Dt_programação, nota.Nota, select])
+  }, [bancoEquipe, gds, nota.Nota, select])
 
   const toggleSecection = useCallback(
     (item: IPropsEquipe) => {
@@ -212,7 +212,16 @@ export function EditNota({ nota, closed }: Props) {
         .then(() => console.log('0k'))
         .catch((h) => console.log(h))
     },
-    [select, nota, ntSituation, obsPlanejamento, selectAlert, equipe, closed],
+    [
+      select,
+      nota,
+      ntSituation,
+      obsPlanejamento,
+      selectAlert,
+      gds,
+      equipe,
+      closed,
+    ],
   )
 
   const numero = String(nota.MO)

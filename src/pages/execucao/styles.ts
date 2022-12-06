@@ -43,10 +43,10 @@ export const ContainerButton = styled.div`
 export const Shortcut = styled.div`
   padding: 0 20px;
   display: grid;
-  grid-template-columns: 10rem 10rem 10rem 10rem 10rem 14rem;
-  grid-template-rows: 3rem;
+  grid-template-columns: repeat(8, 9rem);
+  grid-template-rows: 4rem;
   flex-direction: row;
-  grid-gap: 5rem;
+  grid-gap: 3rem;
 
   background-color: #74c9a8;
 
@@ -56,5 +56,6 @@ export const Shortcut = styled.div`
     height: 40px;
     align-self: center;
     padding: 0 10px;
+    font-size: 14px;
   }
 `

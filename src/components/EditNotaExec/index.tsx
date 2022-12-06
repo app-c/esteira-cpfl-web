@@ -108,7 +108,7 @@ export function EditNotaExec({ nota, closed }: Props) {
       } else {
         const dt = {
           ...item,
-          faturamento: nota.MO,
+          faturamento: nota.MO / 168.96,
         }
         arrSelect.push(dt)
       }
@@ -135,6 +135,7 @@ export function EditNotaExec({ nota, closed }: Props) {
         ...nota,
         cidade,
         TLE,
+        MO: mo,
         EQUIPE: Eqp,
         Dt_programação,
         SUPERVISOR: officer,

@@ -2,7 +2,6 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   display: flex;
-  width: 10rem;
 
   h4 {
     font-size: 14px;
@@ -11,5 +10,9 @@ export const Container = styled.div`
   button {
     display: flex;
     width: 100%;
+
+    p {
+      font-size: 12px;
+    }
   }
 `

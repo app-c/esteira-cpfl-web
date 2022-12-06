@@ -34,6 +34,8 @@ export function Cards({
     currency: 'BRL',
   })
   const equipe = nota.EQUIPE || []
+
+
   return (
     <IconContext.Provider value={{color: 'blue',}} >
 
@@ -60,11 +62,28 @@ export function Cards({
               ))}
           </BoxEquipe>
 
-          <ContainerButton>
-            <Botao pres={submit} title={title1} />
-            <Botao pres={pres} title={title2} variant='secundary' />
-            <Botao pres={deletar} title={title3} variant='danger' />
-          </ContainerButton>
+          {nota.situation === 'estera' && (
+            <ContainerButton>
+              <Botao pres={deletar} title={title3} variant='danger' />
+              <Botao pres={pres} title={title2} variant='secundary' />
+              <Botao pres={submit} title={title1} />
+            </ContainerButton>
+
+          )}
+
+          {nota.situation === 'processo' && (
+              <ContainerButton>
+               <Botao pres={pres} title={title2} variant='secundary' />
+               <Botao pres={submit} title={title1} />
+             </ContainerButton>
+          )}
+          
+          {nota.situation === 'executada' && (
+              <ContainerButton>
+               <Botao pres={pres} title={title2} variant='secundary' />
+             </ContainerButton>
+          )}
+
         </Content>
 
       

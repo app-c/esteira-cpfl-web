@@ -19,7 +19,7 @@ export const Container = styled.div`
 export const ContentGrid = styled.div`
   padding: 5px;
   display: grid;
-  grid-template-columns: 25rem 1fr;
+  grid-template-columns: 23rem 1fr;
   grid-template-rows: 25rem 3rem 8rem 10rem;
   grid-gap: 1rem;
 
@@ -48,7 +48,7 @@ export const ContainerEquipe = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 5rem 5rem 5rem 5rem;
-  grid-gap: 0.5rem 0.1rem;
+  grid-gap: 0.5rem;
 
   button {
     padding: 5px;

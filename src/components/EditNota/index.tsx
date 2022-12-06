@@ -107,7 +107,7 @@ export function EditNota({ nota, closed }: Props) {
       } else {
         const dt = {
           ...item,
-          faturamento: nota.MO,
+          faturamento: nota.MO / 168.96,
         }
         arrSelect.push(dt)
       }

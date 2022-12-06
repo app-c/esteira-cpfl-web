@@ -46,7 +46,10 @@ export function Execucao() {
   const navigate = useNavigate()
   const {estera, ntReprogramada, ntCancelada, gds} = useContext(NotasContext)
 
-  const motionRef = useRef<any>()
+  const motionRefParcial = useRef<any>()
+  const motionRefCancelada = useRef<any>()
+
+
   const motionEst = useRef<any>()
   const motionProc = useRef<any>()
   const motionExec = useRef<any>()
@@ -54,7 +57,8 @@ export function Execucao() {
   const motionCanc = useRef<any>()
   const motionRefPreview = useRef<any>()
 
-  const [width, setWidth] = useState(0)
+  const [widthParcial, setWidthParcial] = useState(0)
+  const [widthCancelada, setWidthCancelada] = useState(0)
   const [widthPreview, setWidthPreview] = useState(0)
   const [widthEst, setWidthEst] = useState(0)
   const [widthProc, setWidthProc] = useState(0)
@@ -133,7 +137,6 @@ export function Execucao() {
 
     const date = addDays(new Date(dateA), 1)
     const datB = addDays(new Date(dateB), 1)
-    console.log(dateA)
 
     if (date.getTime() <= datB.getTime()) {
       const ruslt = eachDayOfInterval({
@@ -243,12 +246,15 @@ export function Execucao() {
     }
   }, [])
 
+  
+
   useEffect(() => {
 
     switch (shortcut) {
       case 'baseConcroll':
         setWidthEst(motionEst.current!.scrollWidth - motionEst.current!.offsetWidth)
         setWidthProc(motionProc.current!.scrollWidth - motionProc.current!.offsetWidth)
+        console.log('esteira')
         break
 
       case 'partial':
@@ -266,27 +272,42 @@ export function Execucao() {
 
         break
 
-        case 'map':
-          console.log('ok')
-        break
+      case 'map':
+        console.log('ok')
+      break
       
       default:
         console.log(`Sorry, we are out of ${shortcut} .`);
+    }
 
+    switch(select) {
+      case 'parcial':
+        setWidthParcial(motionRefParcial.current!.scrollWidth - motionRefParcial.current!.offsetWidth)
+
+      break
+
+      case 'cancelada':
+        setWidthParcial(motionRefParcial.current!.scrollWidth - motionRefParcial.current!.offsetWidth)
+
+      break
+
+      case 'esteria':
+      break
+
+      case '':
       
+      break
+
+      default: 
+        console.log('select nao encontrada')
     }
 
-    if(select === 'parcial') {
-      setWidth(motionRef.current!.scrollWidth - motionRef.current!.offsetWidth)
-
-    } else {
-     
-      setWidthPreview(
-        motionRefPreview.current!.scrollWidth -
-          motionRefPreview.current!.offsetWidth,
-      )
-
-    }
+    
+    
+    setWidthPreview(
+      motionRefPreview.current!.scrollWidth -
+        motionRefPreview.current!.offsetWidth,
+    )
 
     
   }, [preview, ListNotas, ntParcial, estera, ntCancelada, shortcut, select])
@@ -306,6 +327,7 @@ export function Execucao() {
       situation: 'estera'
     })
   }, [])
+
 
   return (
     <Container>
@@ -348,15 +370,20 @@ export function Execucao() {
         </ContainerButton>
       </File>
 
-      <Shortcut>
-        <Botao pres={() => setShortcut('baseConcroll')} title='Controle base' />
-        <Botao pres={() => setShortcut('finish')} title='Notas finalizadas' />
-        <Botao pres={() => setShortcut('partial')} title='Notas parciais' />
-        <Botao pres={() => setShortcut('cancel')} title='Notas canceladas' />
-        <Botao pres={() => setShortcut('map')} title='Mapa geral' />
+      {select === 'esteira' && (
+        <Shortcut>
+          <Botao pres={() => setShortcut('baseConcroll')} title='Controle base' />
+          <Botao pres={() => setShortcut('finish')} title='Notas finalizadas' />
+          <Botao pres={() => setShortcut('partial')} title='Notas parciais' />
+          <Botao pres={() => setShortcut('cancel')} title='Notas canceladas' />
+          <Botao pres={() => setShortcut('map')} title='Mapa geral' />
+          <Botao pres={() => navigate('/aderencia')} title='Mapa geral' />
 
-        <input type="text" placeholder='digite a cidade desejada' />
-      </Shortcut>
+          <input type="text" placeholder='digite a cidade desejada' />
+        </Shortcut>
+
+      )}
+
 
       {/* PREVIEW */}
       <ContainerCards style={{ marginBottom: 20 }}>
@@ -568,13 +595,6 @@ export function Execucao() {
                  </ContainerCards>
           )}
 
-  
-
-          {/* PARCIAL */}
-        
-
-          {/* CANCELADA  */}
-     
         </div>
       )}
 
@@ -584,9 +604,9 @@ export function Execucao() {
           <p>Notas parciais</p>
           <Carousel whileTap={{ cursor: 'grabbing' }}>
             <Inner
-              ref={motionRef}
+              ref={motionRefParcial}
               drag="x"
-              dragConstraints={{ right: 0, left: -width }}
+              dragConstraints={{ right: 0, left: - widthParcial }}
             >
               <div style={{ display: 'flex' }}>
                 {ListNotas.parc.map((nt) => (
@@ -610,9 +630,9 @@ export function Execucao() {
           <p>Notas canceladas</p>
           <Carousel whileTap={{ cursor: 'grabbing' }}>
             <Inner
-              ref={motionRef}
+              ref={motionRefCancelada}
               drag="x"
-              dragConstraints={{ right: 0, left: -width }}
+              dragConstraints={{ right: 0, left: -widthCancelada }}
             >
               <div style={{ display: 'flex' }}>
                 {ListNotas.canc.map((nt) => (

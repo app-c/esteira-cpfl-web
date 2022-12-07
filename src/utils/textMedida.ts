@@ -1,0 +1,17 @@
+export const textMedida = [
+  { name: 'Ajuste/Alteração de programação' },
+  { name: 'Atendimento emergencial' },
+  { name: 'Clientes/terceiros' },
+  { name: 'CO' },
+  { name: 'Condições Climáticas/naturais' },
+  { name: 'COVID-19' },
+  { name: 'Execução' },
+  { name: 'Falta de Materiais' },
+  { name: 'O&M' },
+  { name: 'Planejamento' },
+  { name: 'Recurso ausente (pessoas)' },
+  { name: 'Veículo' },
+  { name: 'Viabilidade' },
+  { name: 'Adiantamento' },
+  { name: 'nenhum' },
+]

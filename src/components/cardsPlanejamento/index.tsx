@@ -19,7 +19,7 @@ interface Props {
   sigleSituation?: string
 }
 
-export function Cards({
+export function CardsPlanejamento({
   nota, colorSituation = '#7c8a7f', sigleSituation,
   pres,
   deletar,
@@ -62,7 +62,7 @@ export function Cards({
               ))}
           </BoxEquipe>
 
-          {nota.situation === 'estera' && (
+          {nota.situation === 'edicao' && (
             <ContainerButton>
               <Botao pres={deletar} title={title3} variant='danger' />
               <Botao pres={pres} title={title2} variant='secundary' />
@@ -77,29 +77,22 @@ export function Cards({
               <Botao pres={submit} title={title1} />
             </ContainerButton>
           )}
-          
-          {nota.situation === 'executada' && (
-            <ContainerButton>
-              <Botao pres={pres} title={title2} variant='secundary' />
-            </ContainerButton>
-          )}
 
           {nota.situation === 'parcial' && (
             <ContainerButton>
-              <Botao pres={pres} title={title2} variant='secundary' />
+              <Botao pres={pres} title={title3} variant='danger' />
               <Botao pres={submit} title={title1} variant='primary' />
             </ContainerButton>
           )}
 
           {nota.situation === 'cancelada' && (
             <ContainerButton>
-              <Botao pres={pres} title={title2} variant='secundary' />
+              <Botao pres={pres} title={title3} variant='danger' />
+              <Botao pres={pres} title={title1} variant='primary' />
             </ContainerButton>
           )}
 
         </Content>
-
-      
       </Container>
     </IconContext.Provider>
   )

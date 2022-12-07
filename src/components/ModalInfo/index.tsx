@@ -1,10 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable array-callback-return */
 import { Form } from '@unform/web'
-import { format } from 'date-fns'
-import { collection, doc, updateDoc } from 'firebase/firestore'
 import { useCallback, useContext, useState } from 'react'
-import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
 import { IPropsEquipe, IProsEster } from '../../dtos'
 import { theme } from '../../theme/theme'
@@ -38,7 +35,7 @@ const Officer = [
   { name: 'Paulo', id: '4' },
 ]
 
-export function EditNotaExec({ nota, closed }: Props) {
+export function ModalInfo({ nota, closed }: Props) {
   const { GDS } = useContext(NotasContext)
   const [bancoEquipe, setBancoEquipe] = useState<IPropsEquipe[]>(
     GDS.filter((h) => {
@@ -51,8 +48,6 @@ export function EditNotaExec({ nota, closed }: Props) {
       }
     }),
   )
-
-  const [obsFocal, setObsFocal] = useState(nota.obsTratativa)
 
   const [notaUpdate, setNotaUpdade] = useState<IProsEster>()
 
@@ -77,33 +72,9 @@ export function EditNotaExec({ nota, closed }: Props) {
 
   const handleSubimit = useCallback(
     (data: IProsEster) => {
-      const mo = String(data.MO).slice()
-      const { TLE, cidade, Dt_programação, Nota, MO } = data
-      const dados = {
-        ...nota,
-        cidade,
-        TLE,
-        EQUIPE: select,
-        Dt_programação,
-        SUPERVISOR: officer,
-        obsExecuçao: '',
-        obsTratativa: '',
-        updateAt: format(new Date(), 'dd/MM/yyyy'),
-      }
-
-      const cole = collection(fire, 'notas')
-      const ref = doc(cole, nota.id)
-
-      console.log(notaUpdate)
-
-      updateDoc(ref, dados).then(() => {
-        alert('nota atualizada')
-        closed()
-      })
-
-      console.log(dados)
+      closed()
     },
-    [nota, select, officer, notaUpdate, closed],
+    [closed],
   )
 
   const numero = String(nota.MO)

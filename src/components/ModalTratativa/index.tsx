@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { collection, doc, updateDoc } from 'firebase/firestore'
 import { useCallback, useState } from 'react'
 import { fire } from '../../config/firebase'
@@ -21,7 +22,10 @@ export function ModalTratativa({ nota, closed }: Props) {
 
     const dados = {
       ...nota,
+      situation: 'rt',
       obsTratativa: `${obsFocal} ${'\n'} ${'\n'}Motivo: ${'\n'}${tratativa}`,
+      obsExecucao: nota.OBSERVACAO,
+      updateAt: format(new Date(), 'dd/MM/yyyy'),
     }
 
     updateDoc(rf, dados)

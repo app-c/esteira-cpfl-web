@@ -41,7 +41,13 @@ export interface IProsEster {
   EQUIPE?: IPropsEquipe[]
   ntSituation: INtSituation
   SUPERVISOR?: string
-  situation: 'estera' | 'processo' | 'parcial' | 'executada' | 'cancelada'
+  situation:
+    | 'estera'
+    | 'processo'
+    | 'parcial'
+    | 'executada'
+    | 'cancelada'
+    | 'edicao'
   PORCENTUAL?: number
   OBSERVACAO: string
   // Dt_parcial?: string

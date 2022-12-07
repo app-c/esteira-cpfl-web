@@ -1,6 +1,12 @@
 import { addDays, format } from 'date-fns'
 import eachDayOfInterval from 'date-fns/fp/eachDayOfInterval'
-import { addDoc, collection, onSnapshot } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot
+} from 'firebase/firestore'
 import {
   ChangeEvent,
   useCallback,
@@ -14,6 +20,7 @@ import Modal from 'react-modal'
 import { api } from '../../api'
 import { Botao } from '../../components/Button'
 import { Cards } from '../../components/Cards'
+import { CardsPlanejamento } from '../../components/cardsPlanejamento'
 import { EditNota } from '../../components/EditNota'
 import { Header } from '../../components/Header'
 import { Map } from '../../components/Map'
@@ -58,8 +65,6 @@ export function Home() {
   const [dateB, setDateB] = useState('')
   const [search, setSearch] = useState('')
 
-  const [modal, setModal] = useState(false)
-
   const db = collection(fire, 'planejamento')
 
   const submit = useCallback(async () => {
@@ -73,7 +78,7 @@ export function Home() {
       nota = {
         ...est,
         EQUIPE: [],
-        situation: 'estera',
+        situation: 'edicao',
       }
       addDoc(db, nota)
         .then(() => console.log('ok'))
@@ -131,7 +136,7 @@ export function Home() {
           }
         })
 
-        ntParcial.forEach((item) => {
+        ntReprogramada.forEach((item) => {
           if (fomatDt === item.Dt_programação) {
             parcial.push(item)
           }
@@ -161,7 +166,7 @@ export function Home() {
       parc,
       canc,
     }
-  }, [dateA, dateB, estera, ntCancelada, ntParcial, search])
+  }, [dateA, dateB, estera, ntCancelada, ntReprogramada, search])
 
   const upload = useCallback(async () => {
     // const cole = collection(fire, 'planejamento')
@@ -224,6 +229,38 @@ export function Home() {
     },
     [gds],
   )
+
+  const handleSendEdit = useCallback(async (item: IProsEster) => {
+    const cole = collection(fire, 'planejamento')
+    const dt = item
+
+    const dados = {
+      ...dt,
+      Dt_programação: format(new Date(), 'dd/MM/yyyy'),
+      situation: 'edicao',
+    }
+
+    switch (item.situation) {
+      case 'parcial':
+        addDoc(cole, dados).then(() => {
+          const col = collection(fire, 'nt-parcial')
+          const rf = doc(col, item.id)
+          deleteDoc(rf)
+        })
+        break
+
+      case 'cancelada':
+        addDoc(cole, dados).then(() => {
+          const col = collection(fire, 'nt-cancelada')
+          const rf = doc(col, item.id)
+          deleteDoc(rf)
+        })
+        break
+
+      default:
+        break
+    }
+  }, [])
 
   return (
     <Container>
@@ -335,9 +372,9 @@ export function Home() {
             >
               <div style={{ display: 'flex' }}>
                 {ListNotas.parc.map((nt) => (
-                  <Cards
+                  <CardsPlanejamento
                     deletar={() => {}}
-                    submit={() => {}}
+                    submit={() => handleSendEdit(nt)}
                     key={nt.id}
                     nota={nt}
                     pres={() => {}}
@@ -361,7 +398,7 @@ export function Home() {
             >
               <div style={{ display: 'flex' }}>
                 {ListNotas.canc.map((nt) => (
-                  <Cards
+                  <CardsPlanejamento
                     deletar={() => {}}
                     submit={() => {}}
                     key={nt.id}

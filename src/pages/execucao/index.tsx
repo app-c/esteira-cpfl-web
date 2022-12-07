@@ -23,6 +23,7 @@ import { Cards } from '../../components/Cards'
 import { EditNotaExec } from '../../components/EditNotaExec'
 import { Header } from '../../components/Header'
 import { Map } from '../../components/Map'
+import { ModalInfo } from '../../components/ModalInfo'
 import { ModalTratativa } from '../../components/ModalTratativa'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
@@ -78,6 +79,11 @@ export function Execucao() {
     modal: false,
   })
 
+  const [opemModalInfo, setOpemModalInfo] = useState<ProsModal>({
+    info: {} as IProsEster,
+    modal: false,
+  })
+
   const [opemModalTratativa, setOpemModalTratativa] = useState<ProsModal>({
     info: {} as IProsEster,
     modal: false
@@ -113,7 +119,7 @@ export function Execucao() {
     })
   }, [estera, preview])
 
-  const closedModalInfo = useCallback(() => {
+  const closedModalEsteira = useCallback(() => {
     setOpemModalEsteira({
       info: {} as IProsEster,
       modal: false,
@@ -122,6 +128,13 @@ export function Execucao() {
 
   const closedModalTratativa = useCallback(() => {
     setOpemModalTratativa({
+      info: {} as IProsEster,
+      modal: false,
+    })
+  }, [])
+
+  const closedModalInfo = useCallback(() => {
+    setOpemModalInfo({
       info: {} as IProsEster,
       modal: false,
     })
@@ -205,27 +218,18 @@ export function Execucao() {
   }, [])
 
   const handleAddParcial = useCallback(async(item: IProsEster) => {
+
     const cole = collection(fire, 'nt-parcial')
     const rf = doc(cole, item.id)
-
-    const dados = {
-      ...item,
-      updateAt: format(new Date(), 'dd/MM/yyyy')
-    }
-
-    setDoc(rf, dados)
+    
+    setDoc(rf, item)
   }, [])
 
   const handleAddCancelada = useCallback(async(item: IProsEster) => {
     const cole = collection(fire, 'nt-cancelada')
     const rf = doc(cole, item.id)
 
-    const dados = {
-      ...item,
-      updateAt: format(new Date(), 'dd/MM/yyyy')
-    }
-
-    setDoc(rf, dados)
+    setDoc(rf, item)
   }, [])
 
   const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
@@ -328,7 +332,6 @@ export function Execucao() {
     })
   }, [])
 
-
   return (
     <Container>
       <Header
@@ -338,11 +341,15 @@ export function Execucao() {
       />
 
       <Modal ariaHideApp={false} isOpen={opemModalEsteira.modal}>
-        <EditNotaExec closed={closedModalInfo} nota={opemModalEsteira.info} />
+        <EditNotaExec closed={closedModalEsteira} nota={opemModalEsteira.info} />
       </Modal>
 
       <Modal ariaHideApp={false} isOpen={opemModalTratativa.modal} >
         <ModalTratativa closed={closedModalTratativa} nota={opemModalTratativa.info}  />
+      </Modal>
+
+      <Modal ariaHideApp={false} isOpen={opemModalInfo.modal} >
+        <ModalInfo closed={closedModalInfo} nota={opemModalInfo.info}  />
       </Modal>
 
       <File>
@@ -377,9 +384,9 @@ export function Execucao() {
           <Botao pres={() => setShortcut('partial')} title='Notas parciais' />
           <Botao pres={() => setShortcut('cancel')} title='Notas canceladas' />
           <Botao pres={() => setShortcut('map')} title='Mapa geral' />
-          <Botao pres={() => navigate('/aderencia')} title='Mapa geral' />
+          <Botao pres={() => navigate('/aderencia')} title='Aderência' />
 
-          <input type="text" placeholder='digite a cidade desejada' />
+          {/* <input type="text" placeholder='digite a cidade desejada' /> */}
         </Shortcut>
 
       )}
@@ -417,6 +424,7 @@ export function Execucao() {
                 {ListNotas.proc.length > 0 && (
                   <h3 style={{marginBottom: 5, marginTop: 15}} >Notas na base</h3>
                 )}
+                
                 <Carousel whileTap={{ cursor: 'grabbing' }}>
                   <Inner
                     ref={motionEst}
@@ -458,7 +466,7 @@ export function Execucao() {
                           title1='resgatar'
                           title2='info'
                           title3='deletar'
-                          deletar={() => navigate('/planejamento')}
+                          // deletar={() => navigate('/planejamento')}
                           submit={() => resgatar(nt.id)}
                           key={nt.id}
                           nota={nt}
@@ -522,12 +530,12 @@ export function Execucao() {
                   <div style={{ display: 'flex' }}>
                     {ListNotas.execE.map((nt) => (
                       <Cards
-                        deletar={() => navigate('/planejamento')}
+                        title2='info'
                         submit={() => upload(nt.id)}
                         key={nt.id}
                         nota={nt}
                         pres={() => {
-                          setOpemModalEsteira({ info: nt, modal: true })
+                          setOpemModalInfo({ info: nt, modal: true })
                         }}
                       />
                     ))}
@@ -551,6 +559,8 @@ export function Execucao() {
                     <div style={{ display: 'flex' }}>
                       {ListNotas.execP.map((nt) => (
                         <Cards
+                          title2='editar'
+                          title1='enviar'
                           deletar={() => deletNota(nt.id)}
                           submit={() => handleAddParcial(nt)}
                           key={nt.id}
@@ -567,32 +577,32 @@ export function Execucao() {
           )}
 
           {shortcut === 'cancel' && (
-                 <ContainerCards>
-                 {ListNotas.execP.length > 0 && (
-                   <h3 style={{marginBottom: 5, marginTop: 15}} >Notas canceladas</h3>
-                   )}
-                   <Carousel whileTap={{ cursor: 'grabbing' }}>
-                     <Inner
-                       ref={motionCanc}
-                       drag="x"
-                       dragConstraints={{ right: 0, left: -widthCanc }}
-                     >
-                       <div style={{ display: 'flex' }}>
-                         {ListNotas.execC.map((nt) => (
-                           <Cards
-                             deletar={() => deletNota(nt.id)}
-                             submit={() => handleAddCancelada(nt)}
-                             key={nt.id}
-                             nota={nt}
-                             pres={() => {
-                               setOpemModalTratativa({ info: nt, modal: true })
-                             }}
-                           />
-                         ))}
-                       </div>
-                     </Inner>
-                   </Carousel>
-                 </ContainerCards>
+            <ContainerCards>
+            {ListNotas.execP.length > 0 && (
+              <h3 style={{marginBottom: 5, marginTop: 15}} >Notas canceladas</h3>
+              )}
+              <Carousel whileTap={{ cursor: 'grabbing' }}>
+                <Inner
+                  ref={motionCanc}
+                  drag="x"
+                  dragConstraints={{ right: 0, left: -widthCanc }}
+                >
+                  <div style={{ display: 'flex' }}>
+                    {ListNotas.execC.map((nt) => (
+                      <Cards
+                        deletar={() => deletNota(nt.id)}
+                        submit={() => handleAddCancelada(nt)}
+                        key={nt.id}
+                        nota={nt}
+                        pres={() => {
+                          setOpemModalTratativa({ info: nt, modal: true })
+                        }}
+                      />
+                    ))}
+                  </div>
+                </Inner>
+              </Carousel>
+            </ContainerCards>
           )}
 
         </div>

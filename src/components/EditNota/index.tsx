@@ -100,7 +100,7 @@ export function EditNota({ nota, closed }: Props) {
       arry.push(dt)
     })
     return arry
-  }, [bancoEquipe, gds, nota.Nota, select])
+  }, [bancoEquipe, gds, nota.Dt_programação, nota.Nota, select])
 
   const toggleSecection = useCallback(
     (item: IPropsEquipe) => {

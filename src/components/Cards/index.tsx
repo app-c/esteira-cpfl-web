@@ -52,6 +52,7 @@ export function Cards({
             <p>{nota.Dt_programação}</p>
             <p>Encarregado: {nota.SUPERVISOR}</p>
             <p>Documento: {nota.TLE}</p>
+            <p>Mo: {nota.MO}</p>
           </div>
 
           <BoxEquipe>

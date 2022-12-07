@@ -1,7 +1,13 @@
 import styled from 'styled-components'
 import { theme } from '../../theme/theme'
 
-type BorderProps = 'estera' | 'processo' | 'parcial' | 'executada' | 'cancelada'
+type BorderProps =
+  | 'estera'
+  | 'processo'
+  | 'parcial'
+  | 'executada'
+  | 'cancelada'
+  | 'edicao'
 interface PropsContainer {
   borderC: BorderProps
 }
@@ -16,6 +22,7 @@ const borderVariant = {
   cancelada: theme.color.red[10],
   estera: theme.color.white[50],
   processo: theme.color.white[50],
+  edicao: theme.color.white[50],
 }
 
 const bgVariant = {

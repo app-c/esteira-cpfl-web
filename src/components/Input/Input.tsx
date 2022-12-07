@@ -1,6 +1,6 @@
+import { useField } from '@unform/core'
 import { InputHTMLAttributes, useEffect, useRef } from 'react'
 import { Container } from './styles'
-import { useField } from '@unform/core'
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   name: string

@@ -18,12 +18,14 @@ import {
 } from 'react'
 import Modal from 'react-modal'
 import { api } from '../../api'
+import { AddNota } from '../../components/AddNota'
 import { Botao } from '../../components/Button'
 import { Cards } from '../../components/Cards'
 import { CardsPlanejamento } from '../../components/cardsPlanejamento'
 import { EditNota } from '../../components/EditNota'
 import { Header } from '../../components/Header'
 import { Map } from '../../components/Map'
+import { ModalInfo } from '../../components/ModalInfo'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
 import { IProsEster } from '../../dtos'
@@ -61,6 +63,13 @@ export function Home() {
     modal: false,
   })
 
+  const [opemModalInfo, setOpemModalInfo] = useState<ProsModal>({
+    info: {} as IProsEster,
+    modal: false,
+  })
+
+  const [opemModaAddNota, setOpemModaAddNota] = useState(false)
+
   const [dateA, setDateA] = useState('')
   const [dateB, setDateB] = useState('')
   const [search, setSearch] = useState('')
@@ -86,6 +95,13 @@ export function Home() {
       dados.push(nota)
     })
   }, [estera, preview])
+
+  const closedModalEdicao = useCallback(() => {
+    setOpemModalEsteira({
+      info: {} as IProsEster,
+      modal: false,
+    })
+  }, [])
 
   const closedModalInfo = useCallback(() => {
     setOpemModalEsteira({
@@ -168,13 +184,17 @@ export function Home() {
     }
   }, [dateA, dateB, estera, ntCancelada, ntReprogramada, search])
 
-  const upload = useCallback(async () => {
-    // const cole = collection(fire, 'planejamento')
-    // ListNotas.est.forEach((h) => {
-    //   const rf = doc(cole, h.id)
-    //   setDoc(rf, h)
-    // })
-  }, [ListNotas])
+  const upload = useCallback(async (item: IProsEster) => {
+    const cole = collection(fire, 'notas')
+    const dt = item
+
+    const nt = {
+      ...dt,
+      situation: 'estera',
+    }
+
+    addDoc(cole, nt).then(() => console.log('ok'))
+  }, [])
 
   const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     setPreview([])
@@ -185,11 +205,13 @@ export function Home() {
       data.append('csv', fl)
 
       await api
-        .post('/', data)
+        .post('/post/csv', data)
         .then((h) => {
           const rs = h.data.map((p: IProsEster) => {
+            const mo = String(p.MO).replace(/[^0-9]/g, '')
             return {
               ...p,
+              MO: Number(mo) / 100,
               situation: 'preview',
             }
           })
@@ -278,7 +300,15 @@ export function Home() {
       />
 
       <Modal ariaHideApp={false} isOpen={opemModalEsteira.modal}>
-        <EditNota closed={closedModalInfo} nota={opemModalEsteira.info} />
+        <EditNota closed={closedModalEdicao} nota={opemModalEsteira.info} />
+      </Modal>
+
+      <Modal isOpen={opemModalInfo.modal}>
+        <ModalInfo closed={closedModalInfo} nota={opemModalInfo.info} />
+      </Modal>
+
+      <Modal isOpen={opemModaAddNota}>
+        <AddNota closed={() => setOpemModaAddNota(false)} />
       </Modal>
 
       <File>
@@ -290,7 +320,7 @@ export function Home() {
         <ContainerButton>
           <Botao
             variant="secundary"
-            title="Minha esteira"
+            title="Esteira de edição"
             pres={() => setSelect('esteira')}
           />
           <Botao
@@ -302,6 +332,12 @@ export function Home() {
             variant="secundary"
             title="notas canceladas"
             pres={() => setSelect('cancelada')}
+          />
+
+          <Botao
+            variant="primary"
+            title="adicionar notas"
+            pres={() => setOpemModaAddNota(true)}
           />
         </ContainerButton>
       </File>
@@ -353,7 +389,7 @@ export function Home() {
                     sigleSituation={nt.ntSituation.sigla}
                     colorSituation={nt.ntSituation.color}
                     deletar={() => {}}
-                    submit={upload}
+                    submit={() => upload(nt)}
                     key={nt.id}
                     nota={nt}
                     pres={() => {
@@ -483,7 +519,4 @@ export function Home() {
       )}
     </Container>
   )
-}
-function useContex() {
-  throw new Error('Function not implemented.')
 }

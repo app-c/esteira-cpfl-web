@@ -1,8 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
-import { eachDayOfInterval, format } from 'date-fns'
 import { collection, onSnapshot } from 'firebase/firestore'
-import React, { createContext } from 'react'
+import React, { createContext, useEffect } from 'react'
 import { fire } from '../config/firebase'
 import {
   IC4,
@@ -51,16 +50,16 @@ export function NotasProvider({ children }: ProviderProps) {
   const [faturamento, setFaturamaneto] = React.useState<IFaturamento[]>([])
   const [notasPorData, setNotasPorData] = React.useState({} as ProsNotasData)
 
-  React.useEffect(() => {
-    const colecNota = collection(fire, 'notas')
-    const colecC4 = collection(fire, 'c4')
-    const colecEmer = collection(fire, 'emergencia')
-    const colecEquip = collection(fire, 'equipes')
-    const colecParc = collection(fire, 'nt-parcial')
-    const colecCan = collection(fire, 'nt-cancelada')
-    const colecFatu = collection(fire, 'faturamento')
-    const coleGds = collection(fire, 'gds')
+  const colecNota = collection(fire, 'notas')
+  const colecC4 = collection(fire, 'c4')
+  const colecEmer = collection(fire, 'emergencia')
+  const colecEquip = collection(fire, 'equipes')
+  const colecParc = collection(fire, 'nt-parcial')
+  const colecCan = collection(fire, 'nt-cancelada')
+  const colecFatu = collection(fire, 'faturamento')
+  const coleGds = collection(fire, 'gds')
 
+  function loadDatas() {
     onSnapshot(colecNota, (h) => {
       const res = h.docs.map((p) => {
         return {
@@ -147,7 +146,15 @@ export function NotasProvider({ children }: ProviderProps) {
 
       setFaturamaneto(rs)
     })
+
+    console.log('context')
+  }
+
+  useEffect(() => {
+    loadDatas()
   }, [])
+
+  console.log('datas')
 
   const GDS = React.useMemo(() => {
     const ADM: IProsFuncionarios[] = []

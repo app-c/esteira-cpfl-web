@@ -80,6 +80,7 @@ export function CardsPlanejamento({
           {nota.situation === 'parcial' && (
             <ContainerButton>
               <Botao pres={pres} title={title3} variant='danger' />
+              <Botao pres={pres} title={title2} variant='secundary' />
               <Botao pres={submit} title={title1} variant='primary' />
             </ContainerButton>
           )}

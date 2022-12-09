@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { Aderencia } from '../pages/aderencia'
+import { EditGds } from '../pages/EditGds'
 import { Execucao } from '../pages/execucao'
 import { Home } from '../pages/home'
 import { Login } from '../pages/login'
@@ -11,6 +12,7 @@ export function Router() {
       <Route path="/planejamento" element={<Home />} />
       <Route path="/aderencia" element={<Aderencia />} />
       <Route path="/loging" element={<Login />} />
+      <Route path="/editGds" element={<EditGds />} />
     </Routes>
   )
 }

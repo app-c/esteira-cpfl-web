@@ -4,19 +4,15 @@ import React, { useRef } from 'react'
 import { Header } from '../../components/Header'
 import { NotasContext } from '../../context/ListNotas'
 import { theme } from '../../theme/theme'
-import { Container } from './styles'
+import { BoxChart, Container } from './styles'
 
 export function Aderencia() {
   const { notasByDate, notasPorData } = React.useContext(NotasContext)
 
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
-  const [dateA, setDateA] = React.useState('')
+  const [dateA, setDateA] = React.useState()
   const [dateB, setDateB] = React.useState('')
   const [value, setValue] = React.useState('')
-
-  const ar1 = [1, 2, 5, 10]
-  const ar2 = [1, 2, 5, 10]
-  const ar3 = [1, 2, 5, 10]
 
   React.useEffect(() => {
     notasByDate(new Date(dateA), new Date(dateB))
@@ -65,12 +61,12 @@ export function Aderencia() {
         label: supervisor.Adelino.executado,
       },
       {
-        x: `Diego - Notas recebidas ${supervisor.Diego.planejado - 1}`,
+        x: `Diego - Notas recebidas ${supervisor.Diego.planejado}`,
         y: supervisor.Diego.executado,
         label: supervisor.Diego.executado,
       },
       {
-        x: `Douglas - Notas recebidas ${supervisor.Douglas.planejado - 1}`,
+        x: `Douglas - Notas recebidas ${supervisor.Douglas.planejado}`,
         y: supervisor.Douglas.executado,
         label: supervisor.Douglas.executado,
       },
@@ -89,12 +85,12 @@ export function Aderencia() {
         label: supervisor.Adelino.parcial,
       },
       {
-        x: `Diego - Notas recebidas ${supervisor.Diego.planejado - 1}`,
+        x: `Diego - Notas recebidas ${supervisor.Diego.planejado}`,
         y: supervisor.Diego.parcial,
         label: supervisor.Diego.parcial,
       },
       {
-        x: `Douglas - Notas recebidas ${supervisor.Douglas.planejado - 1}`,
+        x: `Douglas - Notas recebidas ${supervisor.Douglas.planejado}`,
         y: supervisor.Douglas.parcial,
         label: supervisor.Douglas.parcial,
       },
@@ -113,12 +109,12 @@ export function Aderencia() {
         label: supervisor.Adelino.cancelada,
       },
       {
-        x: `Diego ${supervisor.Diego.planejado - 1}`,
+        x: `Diego ${supervisor.Diego.planejado}`,
         y: supervisor.Diego.cancelada,
         label: supervisor.Diego.cancelada,
       },
       {
-        x: `Douglas ${supervisor.Douglas.planejado - 1}`,
+        x: `Douglas ${supervisor.Douglas.planejado}`,
         y: supervisor.Douglas.cancelada,
         label: supervisor.Douglas.cancelada,
       },
@@ -134,6 +130,9 @@ export function Aderencia() {
       dataC,
       dataP,
       data,
+      tExec: executado.length,
+      tParc: parcial.length,
+      tCanc: cancelada.length,
     }
 
     return dados
@@ -265,6 +264,43 @@ export function Aderencia() {
         name: 'Notas canceladas',
         color: theme.color.red[10],
       },
+
+      {
+        type: 'pie',
+        name: 'Total',
+        data: [
+          {
+            name: '2020',
+            y: nt.tCanc,
+            color: theme.color.red[10], // 2020 color
+            dataLabels: {
+              enabled: true,
+              distance: -50,
+              format: '{point.total} N',
+              style: {
+                fontSize: '15px',
+              },
+            },
+          },
+          {
+            name: '2021',
+            y: nt.tExec,
+            color: theme.color.green[10], // 2021 color
+          },
+          {
+            name: 'nota parcial',
+            y: nt.tParc,
+            color: theme.color.orange[10], // 2022 color
+          },
+        ],
+        center: [20, 25],
+        size: 100,
+        innerSize: '70%',
+        showInLegend: false,
+        dataLabels: {
+          enabled: false,
+        },
+      },
     ],
   }
 
@@ -276,11 +312,20 @@ export function Aderencia() {
         dateB={(h) => setDateB(h)}
       />
       <p>hello</p>
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={options}
-        ref={chartComponentRef}
-      />
+
+      <BoxChart>
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={options}
+          ref={chartComponentRef}
+        />
+
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={options}
+          ref={chartComponentRef}
+        />
+      </BoxChart>
     </Container>
   )
 }

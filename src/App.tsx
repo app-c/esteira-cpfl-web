@@ -10,7 +10,9 @@ export function App() {
     <ThemeProvider theme={theme}>
       <NotasProvider>
         <BrowserRouter>
-          <Router />
+          <div style={{ flex: 1 }}>
+            <Router />
+          </div>
         </BrowserRouter>
       </NotasProvider>
 

@@ -40,6 +40,10 @@ export const File = styled.div`
   input {
     color: ${theme.color.white[50]};
   }
+
+  h1 {
+    align-self: center;
+  }
 `
 
 export const ContainerButton = styled.div`

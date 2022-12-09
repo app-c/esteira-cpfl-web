@@ -17,7 +17,7 @@ import {
   useState
 } from 'react'
 import Modal from 'react-modal'
-import { api } from '../../api'
+import { apiLocal } from '../../api'
 import { AddNota } from '../../components/AddNota'
 import { Botao } from '../../components/Button'
 import { Cards } from '../../components/Cards'
@@ -29,6 +29,7 @@ import { ModalInfo } from '../../components/ModalInfo'
 import { fire } from '../../config/firebase'
 import { NotasContext } from '../../context/ListNotas'
 import { IProsEster } from '../../dtos'
+import { theme } from '../../theme/theme'
 import {
   Carousel,
   Container,
@@ -84,10 +85,19 @@ export function Home() {
     preview.forEach((est) => {
       let nota = {} as IProsEster
 
+      console.log(est.MO)
+
       nota = {
         ...est,
         EQUIPE: [],
         situation: 'edicao',
+        ntSituation: {
+          name: 'Documento SPiR emitido',
+          sigla: 'n/a',
+          id: 23,
+          color1: 'rgba(169, 169, 169, 0.08)',
+          color: '#c1c1c1',
+        },
       }
       addDoc(db, nota)
         .then(() => console.log('ok'))
@@ -177,10 +187,21 @@ export function Home() {
         ? cancelada.filter((h) => h.Nota.includes(search))
         : cancelada
 
+    const vl = est.reduce((ac, i) => {
+      return ac + Number(i.MO)
+    }, 0)
+
+    const mo = Number(vl).toLocaleString('pt-br', {
+      style: 'currency',
+      currency: 'BRL',
+    })
+
+    console.log(vl)
     return {
       est,
       parc,
       canc,
+      mo,
     }
   }, [dateA, dateB, estera, ntCancelada, ntReprogramada, search])
 
@@ -193,6 +214,7 @@ export function Home() {
       situation: 'estera',
     }
 
+    console.log(nt)
     addDoc(cole, nt).then(() => console.log('ok'))
   }, [])
 
@@ -204,7 +226,7 @@ export function Home() {
 
       data.append('csv', fl)
 
-      await api
+      await apiLocal
         .post('/post/csv', data)
         .then((h) => {
           const rs = h.data.map((p: IProsEster) => {
@@ -352,7 +374,10 @@ export function Home() {
           justifyContent: 'space-between',
         }}
       >
-        <label></label>
+        <label>
+          <p style={{ color: theme.color.orange[10] }}>Total MO na edição</p>
+          <h1>{ListNotas.mo}</h1>
+        </label>
       </div>
 
       {/* PREVIEW */}

@@ -373,6 +373,13 @@ export function Execucao() {
             title="notas canceladas"
             pres={() => setSelect('cancelada')}
           />
+
+          
+          <Botao
+            variant="primary"
+            title="Frota"
+            pres={() => navigate('/editGds')}
+          />
         </ContainerButton>
       </File>
 

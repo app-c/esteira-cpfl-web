@@ -230,11 +230,13 @@ export function EditNota({ nota, closed }: Props) {
   )
 
   const numero = String(nota.MO)
-  const val = numero.replace(/([0-9]{0})$/g, '.$100')
-  const mo = Number(val).toLocaleString('pt-br', {
+
+  const val = numero.replace(/([0-9]{0})$/g, '')
+  const mo = Number(nota.MO).toLocaleString('pt-br', {
     style: 'currency',
     currency: 'BRL',
   })
+  console.log(mo, 'm')
 
   return (
     <Container>

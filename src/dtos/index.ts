@@ -3,41 +3,41 @@
 export interface IProsEster {
   id: string
   Nota: string
-  // Tipo: string;
-  // Descricao_da_nota: string;
-  // TAM: string;
-  // Depart: string;
-  // Divisão: string;
-  // Bop: string;
+  Tipo: string
+  Descricao_da_nota: string
+  TAM: string
+  Depart: string
+  Divisão: string
+  Bop: string
   cidade: string
-  // Distribuidora: string;
-  // Fábrica: string;
-  // Status: string;
-  // Código: string;
-  // Texto_cod_medida: string;
-  // Texto_das_medidas: string;
-  // Dt_Criação: string;
+  Distribuidora: string
+  Fábrica: string
+  Status: string
+  Código: string
+  Texto_cod_medida: string
+  Texto_das_medidas: string
+  Dt_Criação: string
   Dt_programação: string
   TLE: string
-  // Local_inst: string;
-  // Lati: string;
-  // Long: string;
-  // Alimentador: string;
-  // Conjunto_elétrico: string;
-  // Qtde_clientes: string;
-  // CHI_max: string;
-  // Obra_livre: string;
-  // Nota_pai: string;
-  // Possui_DI: string;
-  // Num_DI: string;
-  // Possui_viab: string;
-  // Data_viab: string;
-  // Dt_Empreita: string;
-  // Mês_empreita: string;
-  // Ano_empreita: string;
-  // Km: string;
+  Local_inst: string
+  Lati: string
+  Long: string
+  Alimentador: string
+  Conjunto_elétrico: string
+  Qtde_clientes: string
+  CHI_max: string
+  Obra_livre: string
+  Nota_pai: string
+  Possui_DI: string
+  Num_DI: string
+  Possui_viab: string
+  Data_viab: string
+  Dt_Empreita: string
+  Mês_empreita: string
+  Ano_empreita: string
+  Km: string
   MO: number
-  // CAPEX: string;
+  CAPEX: string
   EQUIPE?: IPropsEquipe[]
   ntSituation: INtSituation
   SUPERVISOR?: string

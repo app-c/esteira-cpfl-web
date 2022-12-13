@@ -5,7 +5,8 @@ import {
   collection,
   deleteDoc,
   doc,
-  onSnapshot
+  onSnapshot,
+  setDoc
 } from 'firebase/firestore'
 import {
   ChangeEvent,
@@ -46,7 +47,8 @@ interface ProsModal {
 }
 
 export function Home() {
-  const { gds, GDS, ntCancelada, ntReprogramada } = useContext(NotasContext)
+  const { gds, GDS, ntCancelada, ntReprogramada, estera } =
+    useContext(NotasContext)
   const motionRef = useRef<any>()
   const motionRefPreview = useRef<any>()
   const [width, setWidth] = useState(0)
@@ -54,7 +56,7 @@ export function Home() {
 
   const [notas, setNotas] = useState<IProsEster[]>([])
   const [preview, setPreview] = useState<IProsEster[]>([])
-  const [estera, setEstera] = useState<IProsEster[]>([])
+  const [planejamento, setPlanejamento] = useState<IProsEster[]>([])
   const [ntParcial, setNtParcial] = useState<IProsEster[]>(ntReprogramada)
   const [file, setFile] = useState<any>(null)
   const [select, setSelect] = useState('esteira')
@@ -85,8 +87,6 @@ export function Home() {
     preview.forEach((est) => {
       let nota = {} as IProsEster
 
-      console.log(est.MO)
-
       nota = {
         ...est,
         EQUIPE: [],
@@ -104,16 +104,9 @@ export function Home() {
         .catch(() => console.log('erro'))
       dados.push(nota)
     })
-  }, [estera, preview])
+  }, [planejamento, preview])
 
   const closedModalEdicao = useCallback(() => {
-    setOpemModalEsteira({
-      info: {} as IProsEster,
-      modal: false,
-    })
-  }, [])
-
-  const closedModalInfo = useCallback(() => {
     setOpemModalEsteira({
       info: {} as IProsEster,
       modal: false,
@@ -136,12 +129,15 @@ export function Home() {
           return 0
         })
 
-      setEstera(rs)
+      setPlanejamento(rs)
     })
   }, [])
 
   const ListNotas = useMemo(() => {
+    const base = estera.filter((h) => h.situation === 'estera')
+
     const esteira: IProsEster[] = []
+    const execucao: IProsEster[] = []
     const parcial: IProsEster[] = []
     const cancelada: IProsEster[] = []
 
@@ -156,7 +152,7 @@ export function Home() {
 
       ruslt.forEach((dt) => {
         const fomatDt = format(dt, 'dd/MM/yyyy')
-        estera.forEach((item) => {
+        planejamento.forEach((item) => {
           if (fomatDt === item.Dt_programação) {
             esteira.push(item)
           }
@@ -173,11 +169,20 @@ export function Home() {
             cancelada.push(item)
           }
         })
+
+        base.forEach((item) => {
+          if (fomatDt === item.Dt_programação) {
+            execucao.push(item)
+          }
+        })
       })
     }
 
     const est =
       search !== '' ? esteira.filter((h) => h.Nota.includes(search)) : esteira
+
+    const execu =
+      search !== '' ? execucao.filter((h) => h.Nota.includes(search)) : execucao
 
     const parc =
       search !== '' ? parcial.filter((h) => h.Nota.includes(search)) : parcial
@@ -191,32 +196,45 @@ export function Home() {
       return ac + Number(i.MO)
     }, 0)
 
-    const mo = Number(vl).toLocaleString('pt-br', {
+    const vlEx = execu.reduce((ac, i) => {
+      return ac + Number(i.MO)
+    }, 0)
+
+    const mo = Number(vlEx + vl).toLocaleString('pt-br', {
       style: 'currency',
       currency: 'BRL',
     })
 
-    console.log(vl)
     return {
       est,
       parc,
       canc,
       mo,
+      execucao,
     }
-  }, [dateA, dateB, estera, ntCancelada, ntReprogramada, search])
+  }, [dateA, dateB, search, planejamento, ntReprogramada, ntCancelada, estera])
 
-  const upload = useCallback(async (item: IProsEster) => {
-    const cole = collection(fire, 'notas')
-    const dt = item
-
-    const nt = {
-      ...dt,
-      situation: 'estera',
-    }
-
-    console.log(nt)
-    addDoc(cole, nt).then(() => console.log('ok'))
+  const deletNota = useCallback(async (id: string) => {
+    const cl = collection(fire, 'planejamento')
+    const rf = doc(cl, id)
+    deleteDoc(rf)
   }, [])
+
+  const upload = useCallback(
+    async (item: IProsEster) => {
+      const cole = collection(fire, 'notas')
+      const dt = item
+
+      const nt = {
+        ...dt,
+        situation: 'estera',
+      }
+
+      addDoc(cole, nt).then(() => console.log('ok'))
+      deletNota(item.id)
+    },
+    [deletNota],
+  )
 
   const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     setPreview([])
@@ -250,7 +268,7 @@ export function Home() {
       motionRefPreview.current!.scrollWidth -
         motionRefPreview.current!.offsetWidth,
     )
-  }, [preview, ListNotas, ntParcial, estera, ntCancelada])
+  }, [preview, ListNotas, ntParcial, planejamento, ntCancelada])
 
   const openModaEdit = useCallback(
     (nt: IProsEster) => {
@@ -259,7 +277,6 @@ export function Home() {
       const fil = gds.filter((h) => h.data === nt.Dt_programação)
       const gd = gds.filter((h) => h.data === '00/00/0000')
 
-      console.log(fil.length)
       if (fil.length === 0) {
         gd.forEach((h) => {
           const dt = {
@@ -313,6 +330,33 @@ export function Home() {
     }
   }, [])
 
+  const deletNotaParc = useCallback(async (id: string) => {
+    const cl = collection(fire, 'nt-Parcial')
+    const rf = doc(cl, id)
+    deleteDoc(rf)
+  }, [])
+
+  const deletNotaCanc = useCallback(async (id: string) => {
+    const cl = collection(fire, 'nt-cancelada')
+    const rf = doc(cl, id)
+    deleteDoc(rf)
+  }, [])
+
+  const resgateNotaBase = useCallback((item: IProsEster) => {
+    const rfBase = doc(collection(fire, 'notas'), item.id)
+    const rf = doc(db, item.id)
+
+    const dt = item
+
+    const dados = {
+      ...dt,
+      situation: 'edicao',
+    }
+    deleteDoc(rfBase)
+
+    setDoc(rf, dados)
+  }, [])
+
   return (
     <Container>
       <Header
@@ -326,7 +370,10 @@ export function Home() {
       </Modal>
 
       <Modal isOpen={opemModalInfo.modal}>
-        <ModalInfo closed={closedModalInfo} nota={opemModalInfo.info} />
+        <ModalInfo
+          closed={() => setOpemModalInfo({ modal: false, info: {} })}
+          nota={opemModalInfo.info}
+        />
       </Modal>
 
       <Modal isOpen={opemModaAddNota}>
@@ -413,8 +460,42 @@ export function Home() {
                   <CardsPlanejamento
                     sigleSituation={nt.ntSituation.sigla}
                     colorSituation={nt.ntSituation.color}
-                    deletar={() => {}}
+                    deletar={() => {
+                      deletNota(nt.id)
+                    }}
                     submit={() => upload(nt)}
+                    key={nt.id}
+                    nota={nt}
+                    pres={() => {
+                      openModaEdit(nt)
+                    }}
+                  />
+                ))}
+              </div>
+            </Inner>
+          </Carousel>
+        </ContainerCards>
+      )}
+
+      {select === 'esteira' && (
+        <ContainerCards>
+          <p>Notas em execuçao na base</p>
+          <Carousel whileTap={{ cursor: 'grabbing' }}>
+            <Inner
+              ref={motionRef}
+              drag="x"
+              dragConstraints={{ right: 0, left: -width }}
+            >
+              <div style={{ display: 'flex' }}>
+                {ListNotas.execucao.map((nt) => (
+                  <CardsPlanejamento
+                    title1="resgatar"
+                    sigleSituation={nt.ntSituation.sigla}
+                    colorSituation={nt.ntSituation.color}
+                    deletar={() => {
+                      deletNota(nt.id)
+                    }}
+                    submit={() => resgateNotaBase(nt)}
                     key={nt.id}
                     nota={nt}
                     pres={() => {
@@ -441,11 +522,17 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.parc.map((nt) => (
                   <CardsPlanejamento
-                    deletar={() => {}}
+                    title2="info"
+                    title1="resgatar"
+                    deletar={() => {
+                      deletNotaParc(nt.id)
+                    }}
                     submit={() => handleSendEdit(nt)}
                     key={nt.id}
                     nota={nt}
-                    pres={() => {}}
+                    pres={() => {
+                      setOpemModalInfo({ modal: true, info: nt })
+                    }}
                   />
                 ))}
               </div>
@@ -467,11 +554,17 @@ export function Home() {
               <div style={{ display: 'flex' }}>
                 {ListNotas.canc.map((nt) => (
                   <CardsPlanejamento
-                    deletar={() => {}}
+                    title2="info"
+                    title3="resgatar"
+                    deletar={() => {
+                      deletNotaCanc(nt.id)
+                    }}
                     submit={() => {}}
                     key={nt.id}
                     nota={nt}
-                    pres={() => {}}
+                    pres={() => {
+                      setOpemModalInfo({ modal: true, info: nt })
+                    }}
                   />
                 ))}
               </div>

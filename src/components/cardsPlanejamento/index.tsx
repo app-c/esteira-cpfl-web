@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { IProsEster } from '../../dtos'
 import { Botao } from '../Button'
-import { BoxEquipe, Container, ContainerButton, Content, Header } from './styles'
+import { BoxEquipe, Container, ContainerButton, Content, Header, TextNota } from './styles'
       
 import { IconContext } from 'react-icons'
 import { FaBeer } from 'react-icons/fa'
@@ -42,7 +42,7 @@ export function CardsPlanejamento({
 
         <Content>
           <Header color={colorSituation} >
-            <p>{nota.Nota}</p>
+            <TextNota>{nota.Nota}</TextNota>
             <FaBeer />
             <h6>{sigleSituation}</h6>
           </Header>
@@ -51,6 +51,7 @@ export function CardsPlanejamento({
             <p>{nota.Dt_programação}</p>
             <p>Encarregado: {nota.SUPERVISOR}</p>
             <p>Documento: {nota.TLE}</p>
+            <p>MO: {mo}</p>
           </div>
 
           <BoxEquipe>
@@ -70,10 +71,9 @@ export function CardsPlanejamento({
 
           )}
 
-          {nota.situation === 'processo' && (
+          {nota.situation === 'estera' && (
             <ContainerButton>
-              <Botao pres={pres} title={title2} variant='secundary' />
-              <Botao pres={submit} title={title1} />
+              <Botao pres={submit} title={title1} variant='secundary' />
             </ContainerButton>
           )}
 
@@ -87,8 +87,9 @@ export function CardsPlanejamento({
 
           {nota.situation === 'cancelada' && (
             <ContainerButton>
-              <Botao pres={pres} title={title3} variant='danger' />
-              <Botao pres={pres} title={title1} variant='primary' />
+              <Botao pres={deletar} title={title3} variant='danger' />
+              <Botao pres={pres} title={title2} variant='secundary' />
+              <Botao pres={submit} title={title1} variant='primary' />
             </ContainerButton>
           )}
 

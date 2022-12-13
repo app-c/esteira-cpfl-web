@@ -104,11 +104,16 @@ export const Header = styled.div<PropsHeader>`
   justify-content: space-between;
 
   font-weight: 400;
+
+  h6 {
+    color: #242121;
+  }
 `
 
-export const TextNota = styled.h3`
+export const TextNota = styled.p`
   color: #242121;
   font-size: 16px;
+  font-weight: 600;
 `
 
 export const Text = styled.p`

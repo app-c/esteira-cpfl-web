@@ -5,6 +5,7 @@ const prod = 'https://server.app-com.digital'
 
 export const api = ax.create({
   baseURL: prod,
+  headers: { 'Access-Control-Allow-Origin': '*' },
 })
 
 export const apiLocal = ax.create({

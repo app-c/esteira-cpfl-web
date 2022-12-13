@@ -110,6 +110,13 @@ export function Execucao() {
       nota = {
         ...est,
         EQUIPE: [],
+        ntSituation: {
+          name: 'Documento SPiR emitido',
+          sigla: 'n/a',
+          id: 23,
+          color1: 'rgba(169, 169, 169, 0.08)',
+          color: '#c1c1c1',
+        },
         situation: 'estera',
       }
       addDoc(db, nota)
@@ -298,7 +305,7 @@ export function Execucao() {
       break
 
       case 'cancelada':
-        setWidthParcial(motionRefParcial.current!.scrollWidth - motionRefParcial.current!.offsetWidth)
+        setWidthCancelada(motionRefCancelada.current!.scrollWidth - motionRefCancelada.current!.offsetWidth)
 
       break
 

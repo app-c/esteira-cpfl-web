@@ -14,6 +14,7 @@ export const ContainerCards = styled(motion.div)`
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-bottom: 4rem;
 `
 
 export const Carousel = styled(motion.div)`

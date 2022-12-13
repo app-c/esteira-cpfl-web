@@ -10,7 +10,7 @@ export function Aderencia() {
   const { notasByDate, notasPorData } = React.useContext(NotasContext)
 
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
-  const [dateA, setDateA] = React.useState()
+  const [dateA, setDateA] = React.useState('')
   const [dateB, setDateB] = React.useState('')
   const [value, setValue] = React.useState('')
 

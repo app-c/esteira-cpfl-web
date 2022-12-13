@@ -209,7 +209,7 @@ export function Execucao() {
     }
   }, [dateA, dateB, estera, ntCancelada, ntParcial, search])
 
-  const upload = useCallback(async (id: string) => {
+  const SendEncarregado = useCallback(async (id: string) => {
     const cole = collection(fire, 'notas')
     const rf = doc(cole, id)
     updateDoc(rf, {
@@ -241,11 +241,19 @@ export function Execucao() {
       data.append('csv', fl)
 
       await api
-        .post('/post/csv', data)
-        .then((h) => {
-          setPreview(h.data)
+      .post('/post/csv', data)
+      .then((h) => {
+        const rs = h.data.map((p: IProsEster) => {
+          const mo = String(p.MO).replace(/[^0-9]/g, '')
+          return {
+            ...p,
+            MO: Number(mo) / 100,
+            situation: 'preview',
+          }
         })
-        .catch((h) => console.log(h))
+        setPreview(rs)
+      })
+      .catch((h) => console.log(h.response))
       // setFile(e.target.files[0])
     }
   }, [])
@@ -354,7 +362,7 @@ export function Execucao() {
       <File>
         <ContainerFile>
           <input type="file" onChange={handleFile} />
-          <Botao title="upload notas" pres={submit} />
+          <Botao title="savar notas" pres={submit} />
         </ContainerFile>
 
         <ContainerButton>
@@ -441,7 +449,7 @@ export function Execucao() {
                       {ListNotas.proc.map((nt) => (
                         <Cards
                           deletar={() => deletNota(nt.id)}
-                          submit={() => upload(nt.id)}
+                          submit={() => SendEncarregado(nt.id)}
                           key={nt.id}
                           nota={nt}
                           pres={() => {
@@ -537,7 +545,7 @@ export function Execucao() {
                     {ListNotas.execE.map((nt) => (
                       <Cards
                         title2='info'
-                        submit={() => upload(nt.id)}
+                        submit={() => SendEncarregado(nt.id)}
                         key={nt.id}
                         nota={nt}
                         pres={() => {
